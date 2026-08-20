@@ -127,10 +127,15 @@ export default function Header() {
         )}
 
         {/* Main Navbar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
-            {/* Logo */}
-            <Logo size="md" />
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-20 gap-2 sm:gap-4">
+            {/* Logo - Compact on mobile */}
+            <div className="sm:hidden">
+              <Logo size="sm" />
+            </div>
+            <div className="hidden sm:block">
+              <Logo size="md" />
+            </div>
 
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
