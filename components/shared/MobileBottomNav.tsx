@@ -53,7 +53,8 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090c12]/95 backdrop-blur-lg border-t border-cyan-500/20 px-2 py-1.5 shadow-[0_-5px_20px_rgba(0,0,0,0.8)]">
+      {/* Top Mobile Quick Navigation Bar - Positioned right under the header */}
+      <nav className="md:hidden sticky top-[48px] z-30 bg-[#090c12]/95 backdrop-blur-md border-b border-cyan-500/20 px-2 py-1 shadow-md">
         <div className="grid grid-cols-5 gap-1">
           {items.map((item, idx) => {
             const Icon = item.icon;
@@ -67,14 +68,14 @@ export default function MobileBottomNav() {
                   className="flex flex-col items-center justify-center py-1 relative text-gray-400 hover:text-neon-cyan transition"
                 >
                   <div className="relative">
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-4 h-4" />
                     {Boolean(item.badge && item.badge > 0) && (
-                      <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-neon-cyan text-[9px] font-extrabold text-black">
+                      <span className="absolute -top-1.5 -right-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-neon-cyan text-[8px] font-extrabold text-black">
                         {item.badge}
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] mt-1 font-medium">{item.name}</span>
+                  <span className="text-[9px] mt-0.5 font-medium">{item.name}</span>
                 </button>
               );
             }
@@ -90,11 +91,11 @@ export default function MobileBottomNav() {
                 }`}
               >
                 <div className="relative">
-                  <Icon className={`w-5 h-5 ${isActive ? "text-neon-cyan scale-110 drop-shadow-[0_0_8px_rgba(0,240,255,0.6)]" : ""}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? "text-neon-cyan scale-105 drop-shadow-[0_0_6px_rgba(0,240,255,0.6)]" : ""}`} />
                 </div>
-                <span className="text-[10px] mt-1 font-medium">{item.name}</span>
+                <span className="text-[9px] mt-0.5 font-medium">{item.name}</span>
                 {isActive && (
-                  <span className="absolute -bottom-1 w-6 h-0.5 bg-neon-cyan rounded-full shadow-glow-cyan" />
+                  <span className="absolute -bottom-1 w-5 h-0.5 bg-neon-cyan rounded-full shadow-glow-cyan" />
                 )}
               </Link>
             );
