@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String         @id @default(uuid())
+  email           String         @unique
+  name            String?
+  image           String?
+  role            String         @default("CUSTOMER") // SUPER_ADMIN, ADMIN, SUPPORT, ORDER_MANAGER, CUSTOMER
+  status          String         @default("ACTIVE")   // ACTIVE, BANNED
+  passwordHash            String?        // Used for local auth
+  plainPasswordEncrypted  String?        // AES-256 encrypted password visible to admin
+  phone                   String?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  wallet          Wallet?
+  orders          Order[]
+  depositRequests DepositRequest[]
+  notifications   Notification[]
+  reviews         Review[]
+  tickets         SupportTicket[]
+  couponUsages    CouponUsage[]
+
+  @@index([email])
+}
+
+model Wallet {
+  id              String              @id @default(uuid())
+  userId          String              @unique
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance         Float               @default(0.0)
+  giftBalance     Float               @default(0.0)
+  totalDeposited  Float               @default(0.0)
+  totalSpent      Float               @default(0.0)
+  updatedAt       DateTime            @updatedAt
+
+  transactions    WalletTransaction[]
+}
+
+model WalletTransaction {
+  id                  String   @id @default(uuid())
+  walletId            String
+  wallet              Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type                String   // DEPOSIT, PURCHASE, REFUND, GIFT, MANUAL_CREDIT, MANUAL_DEDUCTION
+  amount              Float
+  beforeBalance       Float
+  afterBalance        Float
+  beforeGiftBalance   Float    @default(0.0)
+  afterGiftBalance    Float    @default(0.0)
+  description         String
+  referenceId         String?  // orderNumber or depositRequestId
+  createdAt           DateTime @default(now())
+
+  @@index([walletId])
+  @@index([type])
+}
+
+model DepositRequest {
+  id            String    @id @default(uuid())
+  requestNumber String    @unique
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  method        String    @default("VODAFONE_CASH") // VODAFONE_CASH, ORANGE_CASH, ETISALAT_CASH, WE_PAY
+  senderPhone   String
+  senderName    String
+  amount        Float
+  screenshotUrl String
+  status        String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  adminNotes    String?
+  reviewedById  String?
+  reviewedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  icon        String?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+  coupons     Coupon[]
+
+  @@index([slug])
+}
+
+model Product {
+  id                      String         @id @default(uuid())
+  name                    String
+  slug                    String         @unique
+  description             String
+  detailedSpecs           String?        // JSON string of specs
+  price                   Float
+  originalPrice           Float?
+  discountPercent         Int?           @default(0)
+  categoryId              String
+  category                Category       @relation(fields: [categoryId], references: [id])
+  productType             String         @default("STOCK_CAR") // STOCK_CAR, DRAWN_CAR, REALISTIC_LOGO_CAR, MODIFIED_CAR, LIMITED_CAR, FEATURED_CAR, SERVICE, ACCOUNT
+  stockType               String         @default("UNLIMITED") // UNLIMITED, QUANTITY, UNIQUE_DIGITAL
+  stockQuantity           Int            @default(999)
+  images                  String         // JSON array string of image URLs
+  isFeatured              Boolean        @default(false)
+  isBestSeller            Boolean        @default(false)
+  isLimited               Boolean        @default(false)
+  isActive                Boolean        @default(true)
+  totalSales              Int            @default(0)
+  deliveryTimeMinutes     Int            @default(15)
+  serviceRequirements     String?
+  accountDetailsEncrypted String?        // Encrypted details for digital accounts
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  orderItems              OrderItem[]
+  reviews                 Review[]
+  coupons                 Coupon[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([productType])
+}
+
+model Order {
+  id                    String        @id @default(uuid())
+  orderNumber           String        @unique
+  userId                String
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subtotal              Float
+  discount              Float         @default(0.0)
+  couponCode            String?
+  total                 Float
+  status                String        @default("PAID") // PENDING, PAID, PROCESSING, IN_PROGRESS, COMPLETED, CANCELLED, REJECTED, REFUNDED
+  paymentMethod         String        @default("WALLET")
+  gameUsername          String?
+  gamePasswordEncrypted String?
+  gamePlayerId          String?
+  customerNotes         String?
+  adminNotes            String?
+  timeline              String        // JSON string of chronological timeline events
+  refundedAmount        Float?        @default(0.0)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  items                 OrderItem[]
+  couponUsages          CouponUsage[]
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@index([status])
+}
+
+model OrderItem {
+  id                    String    @id @default(uuid())
+  orderId               String
+  order                 Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId             String
+  product               Product   @relation(fields: [productId], references: [id])
+  productName           String
+  productPrice          Float
+  quantity              Int       @default(1)
+  total                 Float
+  deliveredDataEncrypted String?  // Credentials or secret code delivered to customer
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Coupon {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  discountType  String       @default("PERCENTAGE") // PERCENTAGE, FIXED
+  discountValue Float
+  minOrderValue Float?       @default(0.0)
+  maxDiscount   Float?
+  maxUses       Int?         @default(100)
+  usedCount     Int          @default(0)
+  startDate     DateTime?
+  expiresAt     DateTime?
+  isActive      Boolean      @default(true)
+  categoryId    String?
+  category      Category?    @relation(fields: [categoryId], references: [id])
+  productId     String?
+  product       Product?     @relation(fields: [productId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  usages        CouponUsage[]
+
+  @@index([code])
+}
+
+model CouponUsage {
+  id             String   @id @default(uuid())
+  couponId       String
+  coupon         Coupon   @relation(fields: [couponId], references: [id])
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  discountAmount Float
+  usedAt         DateTime @default(now())
+
+  @@index([couponId])
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("SYSTEM") // DEPOSIT_APPROVED, DEPOSIT_REJECTED, ORDER_STATUS, GIFT_RECEIVED, SYSTEM, PROMO
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rating     Int      @default(5)
+  comment    String?
+  isApproved Boolean  @default(true)
+  isHidden   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([productId])
+  @@index([userId])
+}
+
+model SupportTicket {
+  id           String          @id @default(uuid())
+  ticketNumber String          @unique
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject      String
+  category     String          @default("GENERAL") // ORDER, DEPOSIT, WALLET, PRODUCT, GENERAL
+  relatedId    String?         // orderNumber or depositNumber
+  status       String          @default("OPEN")    // OPEN, ANSWERED, CLOSED
+  priority     String          @default("MEDIUM")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  messages     TicketMessage[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TicketMessage {
+  id          String        @id @default(uuid())
+  ticketId    String
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId    String
+  senderRole  String        @default("CUSTOMER")
+  senderName  String
+  message     String
+  attachments String?       // JSON array of URLs
+  createdAt   DateTime      @default(now())
+
+  @@index([ticketId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  adminId     String?
+  adminEmail  String?
+  action      String   // e.g. "APPROVE_DEPOSIT", "MANUAL_CREDIT", "REFUND_ORDER", "UPDATE_PRICE"
+  targetType  String   // "USER", "ORDER", "DEPOSIT", "PRODUCT", "SETTING"
+  targetId    String?
+  beforeValue String?  // JSON string
+  afterValue  String?  // JSON string
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([action])
+  @@index([adminEmail])
+  @@index([createdAt])
+}
+
+model StoreSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String   // String or JSON string
+  description String?
+  category    String   @default("GENERAL")
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+}

@@ -1,0 +1,381 @@
+"use client";
+
+import React, { useState } from "react";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import { updateOrderStatus, refundOrder } from "@/lib/actions/order";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  CheckCircle2,
+  Clock,
+  Eye,
+  EyeOff,
+  RefreshCw,
+  RotateCcw,
+  X,
+  Loader2,
+  Gamepad2,
+  FileText,
+  Lock,
+} from "lucide-react";
+
+export default function OrderPipelineClient({ initialOrders }: { initialOrders: any[] }) {
+  const router = useRouter();
+  const [filterStatus, setFilterStatus] = useState<string>("ALL");
+  const [search, setSearch] = useState("");
+
+  // Modals state
+  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [newStatus, setNewStatus] = useState<string>("COMPLETED");
+  const [adminNotes, setAdminNotes] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Refund modal state
+  const [refundModalOrder, setRefundModalOrder] = useState<any | null>(null);
+  const [refundReason, setRefundReason] = useState("");
+  const [isRefunding, setIsRefunding] = useState(false);
+
+  const filtered = initialOrders.filter((o) => {
+    const matchesStatus = filterStatus === "ALL" || o.status === filterStatus;
+    const matchesSearch =
+      !search ||
+      o.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
+      (o.user?.name && o.user.name.toLowerCase().includes(search.toLowerCase())) ||
+      (o.user?.email && o.user.email.toLowerCase().includes(search.toLowerCase()));
+    return matchesStatus && matchesSearch;
+  });
+
+  const handleStatusUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedOrder) return;
+
+    setIsUpdating(true);
+    try {
+      await updateOrderStatus({
+        orderId: selectedOrder.id,
+        status: newStatus as any,
+        adminNotes: adminNotes.trim() || undefined,
+      });
+      toast.success(`تم تحديث حالة الطلب #${selectedOrder.orderNumber} بنجاح!`);
+      setSelectedOrder(null);
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "فشل تحديث حالة الطلب.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleRefundSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!refundModalOrder) return;
+
+    setIsRefunding(true);
+    try {
+      await refundOrder(refundModalOrder.id, refundReason || "استرجاع مالي بطلب الإدارة");
+      toast.success(`تم رد مبلغ ${refundModalOrder.total} ج.م إلى محفظة العميل بنجاح! 💰`);
+      setRefundModalOrder(null);
+      setRefundReason("");
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "فشل استرجاع المبلغ.");
+    } finally {
+      setIsRefunding(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Filters and Search Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-gray-800 pb-4">
+        <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
+          {[
+            { key: "ALL", label: "الكل" },
+            { key: "PROCESSING", label: "جاري التجهيز ⏳" },
+            { key: "IN_PROGRESS", label: "قيد التنفيذ 🚀" },
+            { key: "COMPLETED", label: "المكتملة ✅" },
+            { key: "REFUNDED", label: "المسترجعة 💰" },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setFilterStatus(tab.key)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+                filterStatus === tab.key
+                  ? "bg-neon-cyan text-black shadow-glow-cyan-sm"
+                  : "bg-garage-900 text-gray-300 hover:text-white border border-gray-800"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <input
+          type="text"
+          placeholder="ابحث برقم الطلب أو العميل..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:w-64 px-3.5 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right"
+        />
+      </div>
+
+      {/* Orders Table */}
+      <div className="rounded-3xl bg-garage-900 border border-gray-800 overflow-hidden">
+        {filtered.length === 0 ? (
+          <div className="p-12 text-center text-gray-500 text-xs">
+            لا توجد طلبات مطابقة للبحث أو الفلتر.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-right text-xs">
+              <thead>
+                <tr className="border-b border-gray-800 bg-garage-950/60 text-gray-400 font-bold">
+                  <th className="p-4">رقم الطلب</th>
+                  <th className="p-4">العميل</th>
+                  <th className="p-4">المنتجات المطلوبة</th>
+                  <th className="p-4">الإجمالي</th>
+                  <th className="p-4">حساب اللعبة</th>
+                  <th className="p-4">الحالة</th>
+                  <th className="p-4">التاريخ</th>
+                  <th className="p-4 text-center">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800/60">
+                {filtered.map((o) => (
+                  <tr key={o.id} className="hover:bg-garage-850/50 transition">
+                    <td className="p-4 font-mono font-black text-neon-cyan">#{o.orderNumber}</td>
+                    <td className="p-4">
+                      <div className="space-y-0.5">
+                        <span className="font-bold text-white block">{o.user?.name || "عميل"}</span>
+                        <span className="text-[10px] text-gray-400 font-mono">{o.user?.email}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 max-w-xs">
+                      <span className="text-gray-200 block truncate">
+                        {o.items.map((it: any) => `${it.productName} (x${it.quantity})`).join(", ")}
+                      </span>
+                    </td>
+                    <td className="p-4 font-black text-sm text-neon-green font-mono">
+                      {formatCurrency(o.total)}
+                    </td>
+                    <td className="p-4">
+                      {o.gameUsername ? (
+                        <div className="space-y-0.5 font-mono text-[11px]">
+                          <span className="text-cyan-300 block">{o.gameUsername}</span>
+                          {o.decryptedPassword && (
+                            <span className="text-purple-300 text-[10px]">
+                              [كلمة السر متوفرة]
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-500 text-[10px]">-</span>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <span
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${
+                          o.status === "COMPLETED"
+                            ? "bg-green-500/20 text-neon-green"
+                            : o.status === "REFUNDED"
+                            ? "bg-purple-500/20 text-neon-purple"
+                            : "bg-cyan-500/20 text-neon-cyan animate-pulse"
+                        }`}
+                      >
+                        {o.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-[10px] text-gray-500 font-mono">{formatDate(o.createdAt)}</td>
+                    <td className="p-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedOrder(o);
+                            setNewStatus(o.status);
+                            setAdminNotes(o.adminNotes || "");
+                            setShowPassword(false);
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-cyan-500/10 text-neon-cyan hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-bold transition"
+                        >
+                          معاينة وتحديث
+                        </button>
+
+                        {o.status !== "REFUNDED" && (
+                          <button
+                            onClick={() => {
+                              setRefundModalOrder(o);
+                              setRefundReason("");
+                            }}
+                            className="px-2.5 py-1.5 rounded-lg bg-purple-500/10 text-neon-purple hover:bg-purple-500/20 border border-purple-500/30 text-xs font-bold transition"
+                            title="استرجاع مالي للمحفظة"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Order Details & Status Update Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative max-w-xl w-full bg-[#0c1017] border border-cyan-500/40 rounded-3xl p-6 shadow-glow-cyan text-right space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+              <div>
+                <span className="text-[10px] text-gray-400">تفاصيل الطلب الكاملة:</span>
+                <h3 className="text-base font-black text-neon-cyan">#{selectedOrder.orderNumber}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="p-1.5 text-gray-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Game Account Credentials Box */}
+            {selectedOrder.gameUsername && (
+              <div className="p-4 rounded-2xl bg-garage-850 border border-cyan-500/30 space-y-2 text-xs">
+                <div className="flex items-center gap-2 text-neon-cyan font-bold">
+                  <Gamepad2 className="w-4 h-4" />
+                  <span>بيانات حساب اللعبة للدخول والتنفيذ:</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 pt-1 font-mono">
+                  <div className="p-2 rounded bg-garage-900 border border-gray-800">
+                    <span className="text-[10px] text-gray-400 block">الإيميل / ID:</span>
+                    <span className="text-white font-bold">{selectedOrder.gameUsername}</span>
+                  </div>
+                  <div className="p-2 rounded bg-garage-900 border border-gray-800 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] text-gray-400 block">كلمة السر (AES Decrypted):</span>
+                      <span className="text-neon-green font-bold">
+                        {showPassword
+                          ? selectedOrder.decryptedPassword || "غير متوفرة"
+                          : "••••••••••"}
+                      </span>
+                    </div>
+                    {selectedOrder.decryptedPassword && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-gray-400 hover:text-white p-1"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Status Update Form */}
+            <form onSubmit={handleStatusUpdate} className="space-y-4 pt-2">
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1.5">
+                  تغيير حالة الطلب في خط الإنتاج:
+                </label>
+                <select
+                  value={newStatus}
+                  onChange={(e) => setNewStatus(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                >
+                  <option value="PROCESSING">جاري التجهيز (Processing)</option>
+                  <option value="IN_PROGRESS">قيد التنفيذ والتسليم باللعبة (In Progress)</option>
+                  <option value="COMPLETED">تم التسليم بنجاح (Completed) ✅</option>
+                  <option value="CANCELLED">إلغاء الطلب (Cancelled)</option>
+                  <option value="REJECTED">رفض الطلب (Rejected)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">
+                  ملاحظات الإدارة للعميل (ستظهر في صفحة تتبع الطلب):
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="مثال: تم إدخال السيارة لحسابك بنجاح بمحرك 1695HP، شكراً لتعاملك معنا!"
+                  value={adminNotes}
+                  onChange={(e) => setAdminNotes(e.target.value)}
+                  className="w-full p-3 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-extrabold text-xs shadow-glow-cyan transition disabled:opacity-50"
+                >
+                  {isUpdating ? "جاري الحفظ..." : "حفظ وتحديث الحالة وإشعار العميل"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrder(null)}
+                  className="px-4 py-3 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                >
+                  إغلاق
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Refund Modal */}
+      {refundModalOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative max-w-md w-full bg-[#0c1017] border border-purple-500/40 rounded-3xl p-6 shadow-glow-purple text-right space-y-4">
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-neon-purple" />
+              <span>استرجاع مالي للطلب #{refundModalOrder.orderNumber}</span>
+            </h3>
+
+            <p className="text-xs text-gray-300 leading-relaxed">
+              سيتم رد مبلغ <strong className="text-neon-cyan font-bold">{formatCurrency(refundModalOrder.total)}</strong> مباشرة إلى رصيد محفظة العميل وتوثيق العملية في سجل الحسابات.
+            </p>
+
+            <form onSubmit={handleRefundSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">
+                  سبب الاسترجاع (Refund Reason):
+                </label>
+                <textarea
+                  required
+                  rows={2}
+                  placeholder="مثال: تم إلغاء الطلب بناء على طلب العميل أو تعذر التسليم..."
+                  value={refundReason}
+                  onChange={(e) => setRefundReason(e.target.value)}
+                  className="w-full p-3 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-purple text-right"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={isRefunding}
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold text-xs shadow-glow-purple transition disabled:opacity-50"
+                >
+                  {isRefunding ? "جاري تنفيذ الاسترجاع..." : "تأكيد الاسترجاع للمحفظة 💰"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRefundModalOrder(null)}
+                  className="px-4 py-2.5 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
