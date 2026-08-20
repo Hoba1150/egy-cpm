@@ -9,8 +9,8 @@ import Logo from "@/components/shared/Logo";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@cpmgarage.com");
-  const [password, setPassword] = useState("admin123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,10 +93,6 @@ export default function AdminLoginPage() {
               />
               <Lock className="w-4 h-4 absolute right-3.5 top-3.5 text-gray-400" />
             </div>
-          </div>
-
-          <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-[11px] text-cyan-300">
-            👑 حساب المدير العام: <strong>admin@cpmgarage.com</strong> / <strong>admin123456</strong>
           </div>
 
           <button
