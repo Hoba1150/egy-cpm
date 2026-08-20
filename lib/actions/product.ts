@@ -81,9 +81,62 @@ export async function getProducts(params: ProductFilterParams = {}) {
   else if (sortBy === "sales") orderBy = { totalSales: "desc" };
   else if (sortBy === "discount") orderBy = { discountPercent: "desc" };
 
-  const [products, totalCount] = await Promise.all([
-    prisma.product.findMany({
-      where,
+  try {
+    const [products, totalCount] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: {
+          category: true,
+          reviews: {
+            where: { isApproved: true, isHidden: false },
+            select: { rating: true },
+          },
+        },
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+    const items = products.map((prod) => {
+      const ratings = prod.reviews.map((r) => r.rating);
+      const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 5;
+
+      let imagesArray: string[] = [];
+      try {
+        imagesArray = JSON.parse(prod.images || "[]");
+      } catch {
+        imagesArray = [prod.images];
+      }
+
+      return {
+        ...prod,
+        imagesArray,
+        avgRating: Number(avgRating.toFixed(1)),
+        reviewCount: ratings.length,
+      };
+    });
+
+    return {
+      items,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error("getProducts error:", error);
+    return { items: [], totalCount: 0, totalPages: 0, currentPage: page };
+  }
+}
+
+/**
+ * Get Random Active Products for Hero Showcase Slider
+ */
+export async function getRandomProducts(count: number = 5) {
+  try {
+    const allActiveProducts = await prisma.product.findMany({
+      where: { isActive: true },
       include: {
         category: true,
         reviews: {
@@ -91,142 +144,109 @@ export async function getProducts(params: ProductFilterParams = {}) {
           select: { rating: true },
         },
       },
-      orderBy,
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.product.count({ where }),
-  ]);
+    });
 
-  const items = products.map((prod) => {
-    const ratings = prod.reviews.map((r) => r.rating);
-    const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 5;
+    if (allActiveProducts.length === 0) return [];
 
-    let imagesArray: string[] = [];
-    try {
-      imagesArray = JSON.parse(prod.images || "[]");
-    } catch {
-      imagesArray = [prod.images];
-    }
+    // Shuffle randomly
+    const shuffled = [...allActiveProducts].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, count);
 
-    return {
-      ...prod,
-      imagesArray,
-      avgRating: Number(avgRating.toFixed(1)),
-      reviewCount: ratings.length,
-    };
-  });
+    return selected.map((prod) => {
+      const ratings = prod.reviews.map((r) => r.rating);
+      const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 5;
 
-  return {
-    items,
-    totalCount,
-    totalPages: Math.ceil(totalCount / limit),
-    currentPage: page,
-  };
-}
+      let imagesArray: string[] = [];
+      try {
+        imagesArray = JSON.parse(prod.images || "[]");
+      } catch {
+        imagesArray = [prod.images];
+      }
 
-/**
- * Get Random Active Products for Hero Showcase Slider
- */
-export async function getRandomProducts(count: number = 5) {
-  const allActiveProducts = await prisma.product.findMany({
-    where: { isActive: true },
-    include: {
-      category: true,
-      reviews: {
-        where: { isApproved: true, isHidden: false },
-        select: { rating: true },
-      },
-    },
-  });
-
-  if (allActiveProducts.length === 0) return [];
-
-  // Shuffle randomly
-  const shuffled = [...allActiveProducts].sort(() => 0.5 - Math.random());
-  const selected = shuffled.slice(0, count);
-
-  return selected.map((prod) => {
-    const ratings = prod.reviews.map((r) => r.rating);
-    const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 5;
-
-    let imagesArray: string[] = [];
-    try {
-      imagesArray = JSON.parse(prod.images || "[]");
-    } catch {
-      imagesArray = [prod.images];
-    }
-
-    return {
-      ...prod,
-      imagesArray,
-      avgRating: Number(avgRating.toFixed(1)),
-      reviewCount: ratings.length,
-    };
-  });
+      return {
+        ...prod,
+        imagesArray,
+        avgRating: Number(avgRating.toFixed(1)),
+        reviewCount: ratings.length,
+      };
+    });
+  } catch (error) {
+    console.error("getRandomProducts error:", error);
+    return [];
+  }
 }
 
 /**
  * Get Single Product by Slug
  */
 export async function getProductBySlug(slug: string) {
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: {
-      category: true,
-      reviews: {
-        where: { isApproved: true, isHidden: false },
-        include: {
-          user: {
-            select: { name: true, image: true },
+  try {
+    const product = await prisma.product.findUnique({
+      where: { slug },
+      include: {
+        category: true,
+        reviews: {
+          where: { isApproved: true, isHidden: false },
+          include: {
+            user: {
+              select: { name: true, image: true },
+            },
           },
+          orderBy: { createdAt: "desc" },
         },
-        orderBy: { createdAt: "desc" },
       },
-    },
-  });
+    });
 
-  if (!product || !product.isActive) return null;
+    if (!product || !product.isActive) return null;
 
-  let imagesArray: string[] = [];
-  try {
-    imagesArray = JSON.parse(product.images || "[]");
-  } catch {
-    imagesArray = [product.images];
+    let imagesArray: string[] = [];
+    try {
+      imagesArray = JSON.parse(product.images || "[]");
+    } catch {
+      imagesArray = [product.images];
+    }
+
+    let specs: any = null;
+    try {
+      specs = product.detailedSpecs ? JSON.parse(product.detailedSpecs) : null;
+    } catch {
+      specs = null;
+    }
+
+    const ratings = product.reviews.map((r) => r.rating);
+    const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 5;
+
+    return {
+      ...product,
+      imagesArray,
+      specs,
+      avgRating: Number(avgRating.toFixed(1)),
+      reviewCount: ratings.length,
+    };
+  } catch (error) {
+    console.error("getProductBySlug error:", error);
+    return null;
   }
-
-  let specs: any = null;
-  try {
-    specs = product.detailedSpecs ? JSON.parse(product.detailedSpecs) : null;
-  } catch {
-    specs = null;
-  }
-
-  const ratings = product.reviews.map((r) => r.rating);
-  const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 5;
-
-  return {
-    ...product,
-    imagesArray,
-    specs,
-    avgRating: Number(avgRating.toFixed(1)),
-    reviewCount: ratings.length,
-  };
 }
 
 /**
  * Get Categories
  */
 export async function getCategories() {
-  return prisma.category.findMany({
-    where: { isActive: true },
-    orderBy: { order: "asc" },
-    include: {
-      _count: {
-        select: { products: true },
+  try {
+    return await prisma.category.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+      include: {
+        _count: {
+          select: { products: true },
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("getCategories error:", error);
+    return [];
+  }
 }
 
 /**
