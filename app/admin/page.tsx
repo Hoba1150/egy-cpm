@@ -1,5 +1,5 @@
 import React from "react";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentAdminUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "SUPPORT", "ORDER_MANAGER"];
 
 export default async function AdminDashboardPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentAdminUser();
 
   if (!user || !ADMIN_ROLES.includes(user.role)) {
     redirect("/admin/login");
