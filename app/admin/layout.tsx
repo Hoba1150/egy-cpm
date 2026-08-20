@@ -13,12 +13,12 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const user = await getCurrentAdminUser();
-  const isAdmin = user && ADMIN_ROLES.includes(user.role);
+  const isAdmin = Boolean(user && ADMIN_ROLES.includes(user.role));
 
-  // If not logged in as admin — show children directly (login page)
-  if (!isAdmin) {
+  // If not logged in as admin — return clean layout for login page without sidebar
+  if (!user || !isAdmin) {
     return (
-      <div className="min-h-screen bg-[#050608]">
+      <div className="min-h-screen bg-[#050608] flex items-center justify-center">
         {children}
       </div>
     );
