@@ -14,7 +14,7 @@ export default function StoreLayout({
     <div className="relative min-h-screen flex flex-col justify-between">
       <CyberBackground />
       <Header />
-      <main className="flex-1 relative z-10">{children}</main>
+      <main className="flex-1 relative z-10 pb-20 md:pb-0">{children}</main>
       <CartDrawer />
       <MobileBottomNav />
       <Footer />
