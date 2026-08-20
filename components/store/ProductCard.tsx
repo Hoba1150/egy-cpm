@@ -123,7 +123,9 @@ export default function ProductCard({ product }: ProductCardProps) {
         <img
           src={primaryImage}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-108 transition duration-500"
+          loading="lazy"
+          decoding="async"
+          className="w-full h-full object-cover group-hover:scale-108 transition duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-garage-900 via-transparent to-transparent opacity-80" />
 
