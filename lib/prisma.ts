@@ -7,14 +7,16 @@ const globalForPrisma = globalThis as unknown as {
 function getSecureDbUrl() {
   let dbUrl = process.env.DATABASE_URL || "";
   
-  if (!dbUrl) return dbUrl;
+  if (!dbUrl) {
+    dbUrl = "postgresql://postgres:EgyCpm2026SecurePass!@db.rwxugaseleipcgzbromp.supabase.co:6543/postgres?sslmode=require&connect_timeout=30";
+  }
 
-  // Fix Vercel serverless connection to Supabase pooler (Port 6543)
-  if (dbUrl.includes("supabase.co:5432")) {
-    dbUrl = dbUrl.replace(":5432", ":6543");
-    if (!dbUrl.includes("pgbouncer=true")) {
-      dbUrl += (dbUrl.includes("?") ? "&" : "?") + "pgbouncer=true";
-    }
+  // Ensure sslmode=require and connect_timeout exist
+  if (!dbUrl.includes("sslmode=")) {
+    dbUrl += (dbUrl.includes("?") ? "&" : "?") + "sslmode=require";
+  }
+  if (!dbUrl.includes("connect_timeout=")) {
+    dbUrl += "&connect_timeout=30";
   }
 
   return dbUrl;
