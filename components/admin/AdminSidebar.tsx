@@ -22,9 +22,21 @@ import {
 export default function AdminSidebar({ user }: { user: any }) {
   const pathname = usePathname();
 
-  const links = [
+  const userRole = user?.role || "CUSTOMER";
+
+  // Role permissions map
+  const rolePermissions: Record<string, string[]> = {
+    SUPER_ADMIN: ["/admin", "/admin/deposits", "/admin/orders", "/admin/products", "/admin/categories", "/admin/customers", "/admin/coupons", "/admin/tickets", "/admin/reviews", "/admin/audit-logs", "/admin/settings"],
+    ADMIN: ["/admin", "/admin/deposits", "/admin/orders", "/admin/products", "/admin/categories", "/admin/customers", "/admin/coupons", "/admin/tickets", "/admin/reviews", "/admin/audit-logs"],
+    ORDER_MANAGER: ["/admin", "/admin/orders", "/admin/products", "/admin/tickets"],
+    SUPPORT: ["/admin", "/admin/tickets", "/admin/reviews", "/admin/orders"],
+  };
+
+  const allowedHrefs = rolePermissions[userRole] || ["/admin"];
+
+  const allLinks = [
     { name: "مركز القيادة والإحصائيات", href: "/admin", icon: LayoutDashboard },
-    { name: "مراجعة طلبات الإيداع", href: "/admin/deposits", icon: Wallet, highlight: true },
+    { name: "مراجعة طلبات الإيداع", href: "/admin/deposits", icon: Wallet },
     { name: "إدارة وتنفيذ الطلبات", href: "/admin/orders", icon: ShoppingBag },
     { name: "إدارة المنتجات والسيارات", href: "/admin/products", icon: Car },
     { name: "الأقسام والتصنيفات", href: "/admin/categories", icon: FolderTree },
@@ -35,6 +47,8 @@ export default function AdminSidebar({ user }: { user: any }) {
     { name: "سجل العمليات (Audit Logs)", href: "/admin/audit-logs", icon: Shield },
     { name: "إعدادات المتجر والنسخ", href: "/admin/settings", icon: Settings },
   ];
+
+  const links = allLinks.filter((l) => allowedHrefs.includes(l.href));
 
   return (
     <aside className="w-full md:w-64 lg:w-72 bg-[#090c12] border-b md:border-b-0 md:border-l border-cyan-500/20 flex flex-col justify-between shrink-0">
