@@ -141,7 +141,8 @@ export default function DepositPage() {
           </span>
           <h1 className="text-2xl sm:text-4xl font-black text-white">شحن رصيد المحفظة</h1>
           <p className="text-xs sm:text-sm text-gray-400">
-            اشحن محفظتك بسهولة عبر فودافون كاش، أورنج، اتصالات، أو وي باي للشراء الفوري.</p>
+            اشحن محفظتك عبر فودافون كاش، أورنج، اتصالات أو وي باي للشراء الفوري
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
