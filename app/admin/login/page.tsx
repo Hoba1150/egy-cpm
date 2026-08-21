@@ -47,9 +47,9 @@ export default function AdminLoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#050608] relative">
       {/* Background Accent */}
       <div className="absolute inset-0 bg-cyber-grid bg-[size:40px_40px] opacity-20 pointer-events-none" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative w-full max-w-md bg-[#0c1017] border border-cyan-500/40 rounded-3xl p-8 shadow-glow-cyan text-right space-y-6">
+      <div className="relative w-full max-w-md bg-[#0c1017] border border-orange-500/30 rounded-2xl p-8  text-right space-y-6">
         <div className="text-center space-y-3">
           <div className="flex justify-center">
             <Logo size="lg" showText={false} />
@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-3 pr-10 py-3 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right dir-ltr"
+                className="w-full pl-3 pr-10 py-3 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right dir-ltr"
               />
               <Mail className="w-4 h-4 absolute right-3.5 top-3.5 text-gray-400" />
             </div>
@@ -89,7 +89,7 @@ export default function AdminLoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-3 pr-10 py-3 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right dir-ltr"
+                className="w-full pl-3 pr-10 py-3 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right dir-ltr"
               />
               <Lock className="w-4 h-4 absolute right-3.5 top-3.5 text-gray-400" />
             </div>
@@ -98,7 +98,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-extrabold text-xs shadow-glow-cyan hover:scale-[1.01] active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-3.5 rounded-xl bg-orange-500 text-black font-extrabold text-xs  hover:scale-[1.01] active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "تسجيل الدخول إلى لوحة التحكم"}
           </button>
@@ -107,7 +107,7 @@ export default function AdminLoginPage() {
         <div className="pt-2 border-t border-gray-800 text-center">
           <Link
             href="/"
-            className="text-xs text-gray-400 hover:text-neon-cyan transition inline-flex items-center gap-1 font-bold"
+            className="text-xs text-gray-400 hover:text-orange-500 transition inline-flex items-center gap-1 font-bold"
           >
             <span>العودة للواجهة الرئيسية للمتجر</span>
             <ArrowLeft className="w-3.5 h-3.5" />
