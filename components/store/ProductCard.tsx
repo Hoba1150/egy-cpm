@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, Zap, Star, ShieldCheck, Clock, Check } from "lucide-react";
+import { ShoppingCart, Zap, Check } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useCartStore } from "@/lib/store";
 import { toast } from "sonner";
@@ -27,8 +27,6 @@ interface ProductCardProps {
     isLimited?: boolean;
     deliveryTimeMinutes?: number;
     serviceRequirements?: string | null;
-    avgRating?: number;
-    reviewCount?: number;
     category?: { name: string; slug: string };
   };
 }
@@ -69,7 +67,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     });
 
     setIsAdded(true);
-    toast.success(`تمت إضافة "${product.name}" إلى السلة 🏎️`);
+    toast.success(`تمت إضافة "${product.name}" إلى السلة`);
     setTimeout(() => setIsAdded(false), 1500);
   };
 
@@ -94,9 +92,9 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="rounded-xl bg-garage-900 border border-gray-800 hover:border-cyan-500/40 transition flex flex-col justify-between overflow-hidden">
-      {/* Product Image Link */}
-      <Link href={`/product/${product.slug}`} className="block relative aspect-[16/10] overflow-hidden bg-garage-950">
+    <div className="rounded-xl bg-[#12161f] border border-gray-800 hover:border-orange-500/50 transition flex flex-col justify-between overflow-hidden shadow-sm">
+      {/* Product Image Link (Clean Amazon / Noon aspect ratio) */}
+      <Link href={`/product/${product.slug}`} className="block relative aspect-square overflow-hidden bg-black">
         <img
           src={primaryImage}
           alt={product.name}
@@ -106,70 +104,67 @@ export default function ProductCard({ product }: ProductCardProps) {
         />
 
         {product.discountPercent && product.discountPercent > 0 && (
-          <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-red-600 text-white font-bold text-[9px]">
-            خصم {product.discountPercent}%
+          <span className="absolute top-1.5 right-1.5 px-1 py-0.5 rounded bg-orange-600 text-white font-bold text-[8px] sm:text-[9px]">
+            %{product.discountPercent}-
           </span>
         )}
 
-        <div className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/80 text-[9px] text-gray-300">
-          تسليم {product.deliveryTimeMinutes || 10} د
+        <div className="absolute bottom-1 left-1 px-1 py-0.5 rounded bg-black/80 text-[8px] text-gray-300">
+          {product.deliveryTimeMinutes || 10}د
         </div>
       </Link>
 
       {/* Body Info */}
-      <div className="p-3 flex-1 flex flex-col justify-between text-right space-y-2">
+      <div className="p-2 sm:p-3 flex-1 flex flex-col justify-between text-right space-y-1.5">
         <div>
           {/* Category */}
-          <span className="text-[10px] text-neon-cyan block mb-0.5">
-            {product.category?.name || "سيارات وتعديلات"}
+          <span className="text-[9px] text-orange-400 block truncate">
+            {product.category?.name || "سيارات"}
           </span>
 
           {/* Product Name */}
           <Link href={`/product/${product.slug}`} className="block">
-            <h3 className="text-xs sm:text-sm font-bold text-white hover:text-neon-cyan transition line-clamp-1">
+            <h3 className="text-[11px] sm:text-xs font-bold text-white hover:text-orange-500 transition line-clamp-2 leading-tight min-h-[28px]">
               {product.name}
             </h3>
           </Link>
 
           {/* Price */}
-          <div className="flex items-baseline gap-1.5 mt-1">
-            <span className="text-sm sm:text-base font-extrabold text-neon-green font-mono">
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-xs sm:text-sm font-extrabold text-orange-500 font-mono">
               {formatCurrency(product.price)}
             </span>
             {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-[10px] text-gray-500 line-through font-mono">
+              <span className="text-[9px] text-gray-500 line-through font-mono">
                 {formatCurrency(product.originalPrice)}
               </span>
             )}
           </div>
         </div>
 
-        {/* Action Buttons: Add to Cart & Buy Now */}
-        <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-gray-800">
+        {/* Compact Action Buttons */}
+        <div className="grid grid-cols-2 gap-1 pt-1.5 border-t border-gray-800">
           <button
             onClick={handleAddToCart}
-            className={`py-1.5 px-2 rounded-lg border text-[11px] font-bold transition flex items-center justify-center gap-1 ${
+            className={`py-1 px-1 rounded border text-[10px] font-bold transition flex items-center justify-center gap-0.5 ${
               isAdded
-                ? "bg-green-500/20 border-green-500 text-neon-green"
-                : "bg-garage-800 border-gray-700 text-gray-200"
+                ? "bg-green-500/20 border-green-500 text-green-400"
+                : "bg-[#1a202c] border-gray-700 hover:border-gray-500 text-gray-200"
             }`}
           >
             {isAdded ? (
-              <>
-                <Check className="w-3 h-3" />
-                <span>تمت الإضافة</span>
-              </>
+              <Check className="w-3 h-3 text-green-400" />
             ) : (
               <>
-                <ShoppingCart className="w-3 h-3 text-neon-cyan" />
-                <span>السلة</span>
+                <ShoppingCart className="w-3 h-3 text-orange-400" />
+                <span>سلة</span>
               </>
             )}
           </button>
 
           <button
             onClick={handleBuyNow}
-            className="py-1.5 px-2 rounded-lg bg-neon-cyan text-black font-extrabold text-[11px] hover:opacity-90 transition flex items-center justify-center gap-1"
+            className="py-1 px-1 rounded bg-orange-500 hover:bg-orange-600 text-black font-extrabold text-[10px] transition flex items-center justify-center gap-0.5"
           >
             <Zap className="w-3 h-3" />
             <span>شراء</span>
