@@ -72,8 +72,9 @@ export default function GiveawaysClient({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {giveaways.map((g) => {
-            const isFinished = g.status === "COMPLETED" || new Date() > new Date(g.endDate);
-            const isWinnerAnnounced = g.status === "COMPLETED" && g.winnerName;
+            const hasEndedByTime = g.endDate ? new Date().getTime() > new Date(g.endDate).getTime() : false;
+            const isFinished = g.status === "COMPLETED" || (g.status !== "ACTIVE" && hasEndedByTime);
+            const isWinnerAnnounced = Boolean(g.winnerName);
 
             return (
               <div
