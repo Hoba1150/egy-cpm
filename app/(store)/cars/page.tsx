@@ -1,10 +1,10 @@
 import React from "react";
 import { getProducts } from "@/lib/actions/product";
+import { getStoreSettings } from "@/lib/actions/settings";
 import ProductCard from "@/components/store/ProductCard";
 import Link from "next/link";
 import { Car, Flame, Palette, Sparkles, Gauge, Award } from "lucide-react";
 
-import { getStoreSettings } from "@/lib/actions/settings";
 export const dynamic = "force-dynamic";
 
 export default async function CarsPage() {
@@ -14,13 +14,18 @@ export default async function CarsPage() {
     realisticCars,
     limitedCars,
     stockCars,
+    settings,
   ] = await Promise.all([
     getProducts({ productType: "MODIFIED_CAR", limit: 4 }),
     getProducts({ productType: "DRAWN_CAR", limit: 4 }),
     getProducts({ productType: "REALISTIC_LOGO_CAR", limit: 4 }),
     getProducts({ productType: "LIMITED_CAR", limit: 4 }),
     getProducts({ productType: "STOCK_CAR", limit: 4 }),
+    getStoreSettings().catch(() => ({} as Record<string, string>)),
   ]);
+
+  const pageTitle = (settings as Record<string, string>).page_cars_title || "كتالوج السيارات المعدلة والمخصصة";
+  const pageDesc = (settings as Record<string, string>).page_cars_desc || "تصفح جميع السيارات المعدلة والرسم والمحدودة الإصدار بأعلى جودة";
 
   const carCategories = [
     { title: "سيارات معدلة وسرعة 1695HP", slug: "modified", icon: Gauge, count: modifiedCars.totalCount, color: "text-orange-500" },
@@ -31,13 +36,13 @@ export default async function CarsPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-right space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 text-right space-y-10">
       {/* Header */}
-      <div className="space-y-2">
+      <div className="space-y-2 border-b border-gray-800 pb-4">
         <span className="text-xs font-mono font-bold text-orange-500 uppercase tracking-widest">
           Car Parking Multiplayer Fleet
         </span>
-        <h1 className="text-3xl sm:text-5xl font-black text-white">{pageTitle}</h1>
+        <h1 className="text-2xl sm:text-4xl font-black text-white">{pageTitle}</h1>
         <p className="text-xs sm:text-sm text-gray-400">{pageDesc}</p>
       </div>
 
