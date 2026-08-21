@@ -249,7 +249,7 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                 </div>
                 <div className="grid grid-cols-2 gap-2 pt-1 font-mono">
                   <div className="p-2 rounded bg-[#12161f] border border-gray-800">
-                    <span className="text-[10px] text-gray-400 block">الإيميل / ID:</span>
+                    <span className="text-[10px] text-gray-400 block">إيميل اللعبة المسجل:</span>
                     <span className="text-white font-bold">{selectedOrder.gameUsername}</span>
                   </div>
                   <div className="p-2 rounded bg-[#12161f] border border-gray-800 flex items-center justify-between">
