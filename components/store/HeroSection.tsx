@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, ChevronRight, ChevronLeft, Flame, Sparkles, Zap, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ChevronRight, ChevronLeft, Wallet, ShieldCheck, Plus } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
 interface HeroSectionProps {
@@ -46,16 +46,34 @@ const DEFAULT_SLIDES = [
   },
 ];
 
-export default function HeroSection({ user, products = [] }: HeroSectionProps) {
+export default function HeroSection({ user: initialUser, products = [] }: HeroSectionProps) {
+  const [currentUser, setCurrentUser] = useState(initialUser);
   const [settings, setSettings] = useState<Record<string, string>>({});
 
+  const fetchLiveSession = () => {
+    Promise.all([
+      fetch("/api/auth/me", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ user: null })),
+      fetch("/api/settings", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ settings: {} })),
+    ]).then(([authData, settingsData]) => {
+      if (authData.user) {
+        setCurrentUser(authData.user);
+      } else {
+        setCurrentUser(null);
+      }
+      if (settingsData.settings) {
+        setSettings(settingsData.settings);
+      }
+    });
+  };
+
   useEffect(() => {
-    fetch("/api/settings", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.settings) setSettings(data.settings);
-      })
-      .catch(() => {});
+    fetchLiveSession();
+    window.addEventListener("cpm_auth_changed", fetchLiveSession);
+    window.addEventListener("focus", fetchLiveSession);
+    return () => {
+      window.removeEventListener("cpm_auth_changed", fetchLiveSession);
+      window.removeEventListener("focus", fetchLiveSession);
+    };
   }, []);
 
   const slides = products && products.length > 0 ? products : DEFAULT_SLIDES;
@@ -91,59 +109,81 @@ export default function HeroSection({ user, products = [] }: HeroSectionProps) {
     }
   }
 
+  const walletTotal = currentUser?.wallet?.totalAvailable ?? 0;
+
   return (
-    <section className="relative pt-4 pb-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+    <section className="relative pt-3 pb-6 px-3 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto w-full space-y-4">
+        {/* 1. Prominent User Wallet Card in Hero (Orange / Dark Theme) */}
+        <div className="rounded-xl bg-[#12161f] border border-orange-500/30 p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-right">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="w-10 h-10 rounded-lg bg-orange-500/10 border border-orange-500/40 text-orange-500 flex items-center justify-center shrink-0">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[11px] text-gray-400 block font-medium">
+                {currentUser ? `مرحباً بك، ${currentUser.name}` : "رصيد المحفظة المتاح للتسوق"}
+              </span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg sm:text-2xl font-black text-orange-500 font-mono">
+                  {formatCurrency(walletTotal)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <Link
+              href="/deposit"
+              className="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-black font-bold text-xs transition flex items-center justify-center gap-1"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>شحن رصيد</span>
+            </Link>
+            <Link
+              href="/shop"
+              className="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-[#1a202c] hover:bg-[#232b3b] text-white border border-gray-700 font-bold text-xs transition text-center"
+            >
+              تصفح المنتجات
+            </Link>
+          </div>
+        </div>
+
+        {/* 2. Main Action Header & Slider */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-center">
           {/* Text Content */}
-          <div className="lg:col-span-6 text-right space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-neon-cyan text-xs font-bold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{settings.hero_badge || "متجر كار باركينج الاحترافي #1"}</span>
+          <div className="lg:col-span-6 text-right space-y-3">
+            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-bold">
+              <span>{settings.hero_badge || "متجر كار باركينج الرسمي"}</span>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight">
               {settings.store_name || "EGY CPM"}{" "}
-              <span className="text-neon-cyan block sm:inline mt-1 sm:mt-0">
-                {settings.hero_title || "لسيارات وخدمات اللعبة"}
+              <span className="text-orange-500 block sm:inline mt-1 sm:mt-0">
+                {settings.hero_title || "لخدمات وسيارات اللعبة"}
               </span>
             </h1>
 
             <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl">
               {settings.hero_description || "أقوى تشكيلة سيارات معدلة 1695HP، سيارات رسم مميزة، وخدمات شحن كاش وكوينز سريعة وآمنة 100%."}
             </p>
-
-            <div className="flex items-center gap-3 pt-2">
-              <Link
-                href="/shop"
-                className="px-6 py-3 rounded-xl bg-neon-cyan text-black font-extrabold text-xs sm:text-sm hover:opacity-90 transition"
-              >
-                تصفح المنتجات
-              </Link>
-              <Link
-                href="/deposit"
-                className="px-5 py-3 rounded-xl bg-garage-850 text-white font-bold text-xs sm:text-sm border border-gray-700 hover:border-cyan-500/50 transition"
-              >
-                شحن المحفظة
-              </Link>
-            </div>
           </div>
 
-          {/* Lightweight Clean Product Showcase Slider */}
+          {/* Clean Orange Slider Showcase */}
           <div className="lg:col-span-6">
-            <div className="relative rounded-2xl bg-garage-900 border border-gray-800 p-3 sm:p-4 text-right">
+            <div className="rounded-xl bg-[#12161f] border border-gray-800 p-3 text-right">
               {/* Top Slider Control Header */}
-              <div className="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-neon-green" />
-                  <span className="text-xs font-bold text-white truncate max-w-[200px]">
+              <div className="flex items-center justify-between mb-2.5 border-b border-gray-800 pb-2">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />
+                  <span className="text-xs font-bold text-white truncate">
                     {currentProduct.name}
                   </span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={prevSlide}
-                    className="p-1 rounded-lg bg-garage-850 hover:bg-gray-700 text-gray-300"
+                    className="p-1 rounded bg-[#1a202c] hover:bg-gray-700 text-gray-300"
                     aria-label="السابق"
                   >
                     <ChevronRight className="w-4 h-4" />
@@ -153,7 +193,7 @@ export default function HeroSection({ user, products = [] }: HeroSectionProps) {
                   </span>
                   <button
                     onClick={nextSlide}
-                    className="p-1 rounded-lg bg-garage-850 hover:bg-gray-700 text-gray-300"
+                    className="p-1 rounded bg-[#1a202c] hover:bg-gray-700 text-gray-300"
                     aria-label="التالي"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -162,7 +202,7 @@ export default function HeroSection({ user, products = [] }: HeroSectionProps) {
               </div>
 
               {/* Product Image */}
-              <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-garage-950 mb-3">
+              <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-black mb-2.5">
                 <img
                   src={displayImage}
                   alt={currentProduct.name}
@@ -170,7 +210,7 @@ export default function HeroSection({ user, products = [] }: HeroSectionProps) {
                   className="w-full h-full object-cover"
                 />
                 {currentProduct.discountPercent && currentProduct.discountPercent > 0 && (
-                  <span className="absolute top-2 right-2 px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold">
+                  <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-orange-600 text-white text-[10px] font-bold">
                     خصم {currentProduct.discountPercent}%
                   </span>
                 )}
@@ -183,7 +223,7 @@ export default function HeroSection({ user, products = [] }: HeroSectionProps) {
                     {currentProduct.category?.name || "سيارات وخدمات"}
                   </span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-base sm:text-lg font-black text-neon-cyan font-mono">
+                    <span className="text-base font-black text-orange-500 font-mono">
                       {formatCurrency(currentProduct.price)}
                     </span>
                     {currentProduct.originalPrice && (
@@ -196,7 +236,7 @@ export default function HeroSection({ user, products = [] }: HeroSectionProps) {
 
                 <Link
                   href={`/product/${currentProduct.slug}`}
-                  className="px-4 py-2 rounded-xl bg-neon-cyan text-black font-bold text-xs hover:opacity-90 transition flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-black font-bold text-xs transition flex items-center gap-1"
                 >
                   <span>عرض التفاصيل</span>
                   <ArrowLeft className="w-3.5 h-3.5" />
