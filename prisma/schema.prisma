@@ -43,15 +43,15 @@ model Wallet {
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
-  walletId    String
-  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  type        String
-  amount      Float
+  id           String   @id @default(cuid())
+  walletId     String
+  wallet       Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type         String
+  amount       Float
   balanceAfter Float
-  description String
-  referenceId String?
-  createdAt   DateTime @default(now())
+  description  String
+  referenceId  String?
+  createdAt    DateTime @default(now())
 }
 
 model DepositRequest {
@@ -78,37 +78,41 @@ model Category {
   slug        String    @unique
   description String?
   image       String?
+  icon        String?
   order       Int       @default(0)
+  isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   products    Product[]
 }
 
 model Product {
-  id                  String      @id @default(cuid())
-  categoryId          String
-  category            Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  name                String
-  slug                String      @unique
-  description         String
-  price               Float
-  originalPrice       Float?
-  discountPercent     Float?
-  images              String
-  productType         String
-  stockType           String      @default("UNLIMITED")
-  stockQuantity       Int         @default(999)
-  isFeatured          Boolean     @default(false)
-  isBestSeller        Boolean     @default(false)
-  isLimited           Boolean     @default(false)
-  isActive            Boolean     @default(true)
-  totalSales          Int         @default(0)
-  deliveryTimeMinutes Int         @default(10)
-  serviceRequirements String?
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-  orderItems          OrderItem[]
-  reviews             Review[]
+  id                       String      @id @default(cuid())
+  categoryId               String
+  category                 Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name                     String
+  slug                     String      @unique
+  description              String
+  price                    Float
+  originalPrice            Float?
+  discountPercent          Float?
+  images                   String
+  productType              String
+  stockType                String      @default("UNLIMITED")
+  stockQuantity            Int         @default(999)
+  isFeatured               Boolean     @default(false)
+  isBestSeller             Boolean     @default(false)
+  isLimited                Boolean     @default(false)
+  isActive                 Boolean     @default(true)
+  totalSales               Int         @default(0)
+  deliveryTimeMinutes      Int         @default(10)
+  serviceRequirements      String?
+  detailedSpecs            String?
+  accountDetailsEncrypted  String?
+  createdAt                DateTime    @default(now())
+  updatedAt                DateTime    @updatedAt
+  orderItems               OrderItem[]
+  reviews                  Review[]
 }
 
 model Order {
@@ -145,17 +149,17 @@ model OrderItem {
 }
 
 model Coupon {
-  id             String    @id @default(cuid())
-  code           String    @unique
+  id             String        @id @default(cuid())
+  code           String        @unique
   discountType   String
   discountValue  Float
-  minOrderAmount Float     @default(0.0)
+  minOrderAmount Float         @default(0.0)
   maxDiscount    Float?
   usageLimit     Int?
-  usageCount     Int       @default(0)
-  isActive       Boolean   @default(true)
+  usageCount     Int           @default(0)
+  isActive       Boolean       @default(true)
   expiresAt      DateTime?
-  createdAt      DateTime  @default(now())
+  createdAt      DateTime      @default(now())
   usages         CouponUsage[]
 }
 
@@ -177,6 +181,7 @@ model Review {
   rating     Int
   comment    String
   isApproved Boolean  @default(true)
+  isHidden   Boolean  @default(false)
   createdAt  DateTime @default(now())
 }
 
@@ -234,33 +239,33 @@ model AuditLog {
 }
 
 model Giveaway {
-  id            String          @id @default(cuid())
-  title         String
-  description   String
-  prizeName     String
-  prizeImage    String?
-  entryFee      Float           @default(0.0)
-  endDate       DateTime
-  status        String          @default("ACTIVE")
-  winnerName    String?
-  winnerGameId  String?
-  winnerPhone   String?
-  winnerUserId  String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  entries       GiveawayEntry[]
+  id           String          @id @default(cuid())
+  title        String
+  description  String
+  prizeName    String
+  prizeImage   String?
+  entryFee     Float           @default(0.0)
+  endDate      DateTime
+  status       String          @default("ACTIVE")
+  winnerName   String?
+  winnerGameId String?
+  winnerPhone  String?
+  winnerUserId String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  entries      GiveawayEntry[]
 }
 
 model GiveawayEntry {
-  id           String   @id @default(cuid())
-  giveawayId   String
-  giveaway     Giveaway @relation(fields: [giveawayId], references: [id], onDelete: Cascade)
-  userId       String?
-  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userName     String
-  gameId       String
-  phone        String
-  createdAt    DateTime @default(now())
+  id         String   @id @default(cuid())
+  giveawayId String
+  giveaway   Giveaway @relation(fields: [giveawayId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userName   String
+  gameId     String
+  phone      String
+  createdAt  DateTime @default(now())
 
   @@unique([giveawayId, phone])
 }
