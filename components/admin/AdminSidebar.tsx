@@ -16,6 +16,7 @@ import {
   Shield,
   Settings,
   ExternalLink,
+  Gift,
 } from "lucide-react";
 
 export default function AdminSidebar({ user }: { user: any }) {
