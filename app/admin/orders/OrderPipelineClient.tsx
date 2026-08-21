@@ -102,8 +102,8 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
               onClick={() => setFilterStatus(tab.key)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                 filterStatus === tab.key
-                  ? "bg-neon-cyan text-black shadow-glow-cyan-sm"
-                  : "bg-garage-900 text-gray-300 hover:text-white border border-gray-800"
+                  ? "bg-orange-500 text-black "
+                  : "bg-[#12161f] text-gray-300 hover:text-white border border-gray-800"
               }`}
             >
               {tab.label}
@@ -116,12 +116,12 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
           placeholder="ابحث برقم الطلب أو العميل..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:w-64 px-3.5 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right"
+          className="w-full sm:w-64 px-3.5 py-2 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-orange-500 text-right"
         />
       </div>
 
       {/* Orders Table */}
-      <div className="rounded-3xl bg-garage-900 border border-gray-800 overflow-hidden">
+      <div className="rounded-2xl bg-[#12161f] border border-gray-800 overflow-hidden">
         {filtered.length === 0 ? (
           <div className="p-12 text-center text-gray-500 text-xs">
             لا توجد طلبات مطابقة للبحث أو الفلتر.
@@ -143,8 +143,8 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
               </thead>
               <tbody className="divide-y divide-gray-800/60">
                 {filtered.map((o) => (
-                  <tr key={o.id} className="hover:bg-garage-850/50 transition">
-                    <td className="p-4 font-mono font-black text-neon-cyan">#{o.orderNumber}</td>
+                  <tr key={o.id} className="hover:bg-[#1a202c]/50 transition">
+                    <td className="p-4 font-mono font-black text-orange-500">#{o.orderNumber}</td>
                     <td className="p-4">
                       <div className="space-y-0.5">
                         <span className="font-bold text-white block">{o.user?.name || "عميل"}</span>
@@ -156,7 +156,7 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                         {o.items.map((it: any) => `${it.productName} (x${it.quantity})`).join(", ")}
                       </span>
                     </td>
-                    <td className="p-4 font-black text-sm text-neon-green font-mono">
+                    <td className="p-4 font-black text-sm text-green-400 font-mono">
                       {formatCurrency(o.total)}
                     </td>
                     <td className="p-4">
@@ -177,10 +177,10 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                       <span
                         className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${
                           o.status === "COMPLETED"
-                            ? "bg-green-500/20 text-neon-green"
+                            ? "bg-green-500/20 text-green-400"
                             : o.status === "REFUNDED"
-                            ? "bg-purple-500/20 text-neon-purple"
-                            : "bg-cyan-500/20 text-neon-cyan animate-pulse"
+                            ? "bg-orange-500/10 text-orange-400"
+                            : "bg-orange-500/10 text-orange-500 animate-pulse"
                         }`}
                       >
                         {o.status}
@@ -196,7 +196,7 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                             setAdminNotes(o.adminNotes || "");
                             setShowPassword(false);
                           }}
-                          className="px-3 py-1.5 rounded-lg bg-cyan-500/10 text-neon-cyan hover:bg-cyan-500/20 border border-cyan-500/30 text-xs font-bold transition"
+                          className="px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500/10 border border-orange-500/30 text-xs font-bold transition"
                         >
                           معاينة وتحديث
                         </button>
@@ -207,7 +207,7 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                               setRefundModalOrder(o);
                               setRefundReason("");
                             }}
-                            className="px-2.5 py-1.5 rounded-lg bg-purple-500/10 text-neon-purple hover:bg-purple-500/20 border border-purple-500/30 text-xs font-bold transition"
+                            className="px-2.5 py-1.5 rounded-lg bg-orange-500/10 text-orange-400 hover:bg-orange-500/10 border border-orange-500/20 text-xs font-bold transition"
                             title="استرجاع مالي للمحفظة"
                           >
                             <RotateCcw className="w-3.5 h-3.5" />
@@ -226,11 +226,11 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
       {/* Order Details & Status Update Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="relative max-w-xl w-full bg-[#0c1017] border border-cyan-500/40 rounded-3xl p-6 shadow-glow-cyan text-right space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="relative max-w-xl w-full bg-[#0c1017] border border-orange-500/30 rounded-2xl p-6  text-right space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <div>
                 <span className="text-[10px] text-gray-400">تفاصيل الطلب الكاملة:</span>
-                <h3 className="text-base font-black text-neon-cyan">#{selectedOrder.orderNumber}</h3>
+                <h3 className="text-base font-black text-orange-500">#{selectedOrder.orderNumber}</h3>
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
@@ -242,20 +242,20 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
 
             {/* Game Account Credentials Box */}
             {selectedOrder.gameUsername && (
-              <div className="p-4 rounded-2xl bg-garage-850 border border-cyan-500/30 space-y-2 text-xs">
-                <div className="flex items-center gap-2 text-neon-cyan font-bold">
+              <div className="p-4 rounded-2xl bg-[#1a202c] border border-orange-500/30 space-y-2 text-xs">
+                <div className="flex items-center gap-2 text-orange-500 font-bold">
                   <Gamepad2 className="w-4 h-4" />
                   <span>بيانات حساب اللعبة للدخول والتنفيذ:</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 pt-1 font-mono">
-                  <div className="p-2 rounded bg-garage-900 border border-gray-800">
+                  <div className="p-2 rounded bg-[#12161f] border border-gray-800">
                     <span className="text-[10px] text-gray-400 block">الإيميل / ID:</span>
                     <span className="text-white font-bold">{selectedOrder.gameUsername}</span>
                   </div>
-                  <div className="p-2 rounded bg-garage-900 border border-gray-800 flex items-center justify-between">
+                  <div className="p-2 rounded bg-[#12161f] border border-gray-800 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-gray-400 block">كلمة السر (AES Decrypted):</span>
-                      <span className="text-neon-green font-bold">
+                      <span className="text-green-400 font-bold">
                         {showPassword
                           ? selectedOrder.decryptedPassword || "غير متوفرة"
                           : "••••••••••"}
@@ -284,7 +284,7 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                  className="w-full px-3.5 py-2.5 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right"
                 >
                   <option value="PROCESSING">جاري التجهيز (Processing)</option>
                   <option value="IN_PROGRESS">قيد التنفيذ والتسليم باللعبة (In Progress)</option>
@@ -303,7 +303,7 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                   placeholder="مثال: تم إدخال السيارة لحسابك بنجاح بمحرك 1695HP، شكراً لتعاملك معنا!"
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
-                  className="w-full p-3 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                  className="w-full p-3 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right"
                 />
               </div>
 
@@ -311,14 +311,14 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-extrabold text-xs shadow-glow-cyan transition disabled:opacity-50"
+                  className="flex-1 py-3 rounded-xl bg-orange-500 text-black font-extrabold text-xs  transition disabled:opacity-50"
                 >
                   {isUpdating ? "جاري الحفظ..." : "حفظ وتحديث الحالة وإشعار العميل"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className="px-4 py-3 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                  className="px-4 py-3 rounded-xl bg-[#1a202c] text-gray-300 text-xs font-bold"
                 >
                   إغلاق
                 </button>
@@ -331,14 +331,14 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
       {/* Refund Modal */}
       {refundModalOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="relative max-w-md w-full bg-[#0c1017] border border-purple-500/40 rounded-3xl p-6 shadow-glow-purple text-right space-y-4">
+          <div className="relative max-w-md w-full bg-[#0c1017] border border-orange-500/30 rounded-2xl p-6  text-right space-y-4">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <RotateCcw className="w-5 h-5 text-neon-purple" />
+              <RotateCcw className="w-5 h-5 text-orange-400" />
               <span>استرجاع مالي للطلب #{refundModalOrder.orderNumber}</span>
             </h3>
 
             <p className="text-xs text-gray-300 leading-relaxed">
-              سيتم رد مبلغ <strong className="text-neon-cyan font-bold">{formatCurrency(refundModalOrder.total)}</strong> مباشرة إلى رصيد محفظة العميل وتوثيق العملية في سجل الحسابات.
+              سيتم رد مبلغ <strong className="text-orange-500 font-bold">{formatCurrency(refundModalOrder.total)}</strong> مباشرة إلى رصيد محفظة العميل وتوثيق العملية في سجل الحسابات.
             </p>
 
             <form onSubmit={handleRefundSubmit} className="space-y-4">
@@ -352,7 +352,7 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                   placeholder="مثال: تم إلغاء الطلب بناء على طلب العميل أو تعذر التسليم..."
                   value={refundReason}
                   onChange={(e) => setRefundReason(e.target.value)}
-                  className="w-full p-3 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-purple text-right"
+                  className="w-full p-3 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-neon-purple text-right"
                 />
               </div>
 
@@ -360,14 +360,14 @@ export default function OrderPipelineClient({ initialOrders }: { initialOrders: 
                 <button
                   type="submit"
                   disabled={isRefunding}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold text-xs shadow-glow-purple transition disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold text-xs  transition disabled:opacity-50"
                 >
                   {isRefunding ? "جاري تنفيذ الاسترجاع..." : "تأكيد الاسترجاع للمحفظة 💰"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setRefundModalOrder(null)}
-                  className="px-4 py-2.5 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-[#1a202c] text-gray-300 text-xs font-bold"
                 >
                   إلغاء
                 </button>
