@@ -71,14 +71,14 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
       <div className="flex justify-between items-center border-b border-gray-800 pb-4">
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-extrabold text-xs shadow-glow-cyan flex items-center gap-1.5 hover:scale-105 transition"
+          className="px-5 py-2.5 rounded-xl bg-orange-500 text-black font-extrabold text-xs  flex items-center gap-1.5 hover:scale-105 transition"
         >
           <Plus className="w-4 h-4" />
           <span>إنشاء كود خصم جديد +</span>
         </button>
       </div>
 
-      <div className="rounded-3xl bg-garage-900 border border-gray-800 overflow-hidden">
+      <div className="rounded-2xl bg-[#12161f] border border-gray-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-right text-xs">
             <thead>
@@ -94,8 +94,8 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
             </thead>
             <tbody className="divide-y divide-gray-800/60">
               {coupons.map((c) => (
-                <tr key={c.id} className="hover:bg-garage-850/50 transition">
-                  <td className="p-4 font-mono font-black text-sm text-neon-cyan">{c.code}</td>
+                <tr key={c.id} className="hover:bg-[#1a202c]/50 transition">
+                  <td className="p-4 font-mono font-black text-sm text-orange-500">{c.code}</td>
                   <td className="p-4 font-bold text-white">
                     {c.discountType === "PERCENTAGE" ? `${c.discountValue}%` : `${c.discountValue} ج.م`}
                   </td>
@@ -103,15 +103,15 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
                     {c.minOrderValue ? `${c.minOrderValue} ج.م` : "بدون حد أدنى"}
                   </td>
                   <td className="p-4 font-mono">
-                    <span className="text-neon-green font-bold">{c.usedCount}</span> / {c.maxUses || "∞"}
+                    <span className="text-green-400 font-bold">{c.usedCount}</span> / {c.maxUses || "∞"}
                   </td>
                   <td className="p-4">
                     <button
                       onClick={() => handleToggle(c.id, c.isActive)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${
                         c.isActive
-                          ? "bg-green-500/20 text-neon-green border border-green-500/30"
-                          : "bg-red-500/20 text-neon-red border border-red-500/30"
+                          ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                          : "bg-red-500/20 text-red-400 border border-red-500/30"
                       }`}
                     >
                       {c.isActive ? "نشط ومفعل" : "معطل"}
@@ -137,7 +137,7 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
       {/* Add Coupon Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="relative max-w-md w-full bg-[#0c1017] border border-cyan-500/40 rounded-3xl p-6 shadow-glow-cyan text-right space-y-4">
+          <div className="relative max-w-md w-full bg-[#0c1017] border border-orange-500/30 rounded-2xl p-6  text-right space-y-4">
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <h3 className="text-base font-bold text-white">إنشاء كوبون خصم جديد</h3>
               <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white">
@@ -154,7 +154,7 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
                   placeholder="مثال: DRIFT2026"
                   value={code}
                   onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  className="w-full px-3.5 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan uppercase font-mono"
+                  className="w-full px-3.5 py-2 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 uppercase font-mono"
                 />
               </div>
 
@@ -164,7 +164,7 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
                   <select
                     value={discountType}
                     onChange={(e) => setDiscountType(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white text-right"
+                    className="w-full px-3 py-2 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white text-right"
                   >
                     <option value="PERCENTAGE">نسبة مئوية (%)</option>
                     <option value="FIXED">مبلغ ثابت (ج.م)</option>
@@ -179,7 +179,7 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
                     min={1}
                     value={discountValue}
                     onChange={(e) => setDiscountValue(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white text-right font-mono"
+                    className="w-full px-3 py-2 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white text-right font-mono"
                   />
                 </div>
               </div>
@@ -191,7 +191,7 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
                     type="number"
                     value={minOrderValue}
                     onChange={(e) => setMinOrderValue(e.target.value ? Number(e.target.value) : "")}
-                    className="w-full px-3 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white text-right font-mono"
+                    className="w-full px-3 py-2 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white text-right font-mono"
                   />
                 </div>
 
@@ -201,7 +201,7 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
                     type="number"
                     value={maxUses}
                     onChange={(e) => setMaxUses(e.target.value ? Number(e.target.value) : "")}
-                    className="w-full px-3 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white text-right font-mono"
+                    className="w-full px-3 py-2 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white text-right font-mono"
                   />
                 </div>
               </div>
@@ -210,14 +210,14 @@ export default function CouponsManagerClient({ initialCoupons }: { initialCoupon
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-bold text-xs shadow-glow-cyan transition disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-orange-500 text-black font-bold text-xs  transition disabled:opacity-50"
                 >
                   {isSaving ? "جاري الإنشاء..." : "إنشاء الكوبون"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-[#1a202c] text-gray-300 text-xs font-bold"
                 >
                   إلغاء
                 </button>
