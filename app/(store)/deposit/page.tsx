@@ -97,27 +97,18 @@ export default function DepositPage() {
 
     setIsSubmitting(true);
     try {
-      // 1. Upload screenshot
-      const formData = new FormData();
-      formData.append("file", screenshotFile);
-
-      const uploadRes = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const uploadData = await uploadRes.json();
-      if (!uploadRes.ok || !uploadData.url) {
-        throw new Error(uploadData.message || "فشل رفع صورة التحويل");
+      if (!screenshotPreview) {
+        toast.error("يرجى اختيار صورة إثبات التحويل أولاً.");
+        return;
       }
 
-      // 2. Submit Deposit Request
+      // 2. Submit Deposit Request using direct Base64 Data URL (Ultra-reliable on Vercel serverless)
       const res = await submitDepositRequest({
         method,
         senderPhone: senderPhone.trim(),
         senderName: senderName.trim(),
         amount: Number(amount),
-        screenshotUrl: uploadData.url,
+        screenshotUrl: screenshotPreview,
       });
 
       if (res.success) {
