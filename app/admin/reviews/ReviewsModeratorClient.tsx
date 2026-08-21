@@ -24,7 +24,7 @@ export default function ReviewsModeratorClient({ initialReviews }: { initialRevi
   };
 
   return (
-    <div className="rounded-3xl bg-garage-900 border border-gray-800 overflow-hidden">
+    <div className="rounded-2xl bg-[#12161f] border border-gray-800 overflow-hidden">
       {reviews.length === 0 ? (
         <div className="p-12 text-center text-gray-500 text-xs">
           لا توجد تقييمات مضافة حالياً.
@@ -35,22 +35,22 @@ export default function ReviewsModeratorClient({ initialReviews }: { initialRevi
             <div
               key={r.id}
               className={`p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition ${
-                r.isHidden ? "bg-garage-950/80 opacity-60" : "hover:bg-garage-850/50"
+                r.isHidden ? "bg-garage-950/80 opacity-60" : "hover:bg-[#1a202c]/50"
               }`}
             >
               <div className="space-y-1.5 flex-1 min-w-0">
                 <div className="flex items-center gap-3">
                   <span className="font-bold text-white text-xs">{r.user?.name || "عميل"}</span>
-                  <div className="flex items-center gap-0.5 text-neon-amber">
+                  <div className="flex items-center gap-0.5 text-yellow-400">
                     {[...Array(r.rating)].map((_, i) => (
                       <Star key={i} className="w-3.5 h-3.5 fill-neon-amber" />
                     ))}
                   </div>
-                  <span className="text-[10px] text-neon-cyan font-mono">
+                  <span className="text-[10px] text-orange-500 font-mono">
                     المنتج: {r.product?.name}
                   </span>
                   {r.isHidden && (
-                    <span className="px-2 py-0.5 rounded bg-red-500/20 text-neon-red text-[10px] font-bold">
+                    <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px] font-bold">
                       مخفي
                     </span>
                   )}
@@ -67,7 +67,7 @@ export default function ReviewsModeratorClient({ initialReviews }: { initialRevi
               <div className="flex items-center gap-2 self-end sm:self-auto">
                 <button
                   onClick={() => handleAction(r.id, r.isHidden ? "UNHIDE" : "HIDE")}
-                  className="p-2 rounded-xl bg-garage-850 hover:bg-gray-800 text-gray-300 hover:text-white border border-gray-700 transition text-xs flex items-center gap-1 font-semibold"
+                  className="p-2 rounded-xl bg-[#1a202c] hover:bg-gray-800 text-gray-300 hover:text-white border border-gray-700 transition text-xs flex items-center gap-1 font-semibold"
                 >
                   {r.isHidden ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                   <span>{r.isHidden ? "إظهار" : "إخفاء"}</span>
