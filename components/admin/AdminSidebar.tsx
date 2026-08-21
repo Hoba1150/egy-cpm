@@ -24,9 +24,9 @@ export default function AdminSidebar({ user }: { user: any }) {
 
   // Role permissions map
   const rolePermissions: Record<string, string[]> = {
-    SUPER_ADMIN: ["/admin", "/admin/deposits", "/admin/orders", "/admin/products", "/admin/categories", "/admin/customers", "/admin/coupons", "/admin/tickets", "/admin/reviews", "/admin/audit-logs", "/admin/settings"],
-    ADMIN: ["/admin", "/admin/deposits", "/admin/orders", "/admin/products", "/admin/categories", "/admin/customers", "/admin/coupons", "/admin/tickets", "/admin/reviews", "/admin/audit-logs"],
-    ORDER_MANAGER: ["/admin", "/admin/orders", "/admin/products", "/admin/tickets"],
+    SUPER_ADMIN: ["/admin", "/admin/deposits", "/admin/orders", "/admin/giveaways", "/admin/products", "/admin/categories", "/admin/customers", "/admin/coupons", "/admin/tickets", "/admin/reviews", "/admin/audit-logs", "/admin/settings"],
+    ADMIN: ["/admin", "/admin/deposits", "/admin/orders", "/admin/giveaways", "/admin/products", "/admin/categories", "/admin/customers", "/admin/coupons", "/admin/tickets", "/admin/reviews", "/admin/audit-logs"],
+    ORDER_MANAGER: ["/admin", "/admin/orders", "/admin/giveaways", "/admin/products", "/admin/tickets"],
     SUPPORT: ["/admin", "/admin/tickets", "/admin/reviews", "/admin/orders"],
   };
 
@@ -34,6 +34,7 @@ export default function AdminSidebar({ user }: { user: any }) {
 
   const allLinks = [
     { name: "مركز القيادة والإحصائيات", href: "/admin", icon: LayoutDashboard },
+    { name: "إدارة السحوبات والجوائز", href: "/admin/giveaways", icon: Gift },
     { name: "مراجعة طلبات الإيداع", href: "/admin/deposits", icon: Wallet },
     { name: "إدارة وتنفيذ الطلبات", href: "/admin/orders", icon: ShoppingBag },
     { name: "إدارة المنتجات والسيارات", href: "/admin/products", icon: Car },
