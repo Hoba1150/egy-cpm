@@ -1,10 +1,10 @@
 import React from "react";
 import { getProducts } from "@/lib/actions/product";
-import { getStoreSettings } from "@/lib/actions/settings";
 import ProductCard from "@/components/store/ProductCard";
 import Link from "next/link";
 import { Car, Flame, Palette, Sparkles, Gauge, Award } from "lucide-react";
 
+import { getStoreSettings } from "@/lib/actions/settings";
 export const dynamic = "force-dynamic";
 
 export default async function CarsPage() {
@@ -14,35 +14,33 @@ export default async function CarsPage() {
     realisticCars,
     limitedCars,
     stockCars,
-    settings,
   ] = await Promise.all([
     getProducts({ productType: "MODIFIED_CAR", limit: 4 }),
     getProducts({ productType: "DRAWN_CAR", limit: 4 }),
     getProducts({ productType: "REALISTIC_LOGO_CAR", limit: 4 }),
     getProducts({ productType: "LIMITED_CAR", limit: 4 }),
     getProducts({ productType: "STOCK_CAR", limit: 4 }),
-    getStoreSettings().catch(() => ({} as Record<string, string>)),
   ]);
-
-  const pageTitle = (settings as Record<string, string>).page_cars_title || "كتالوج السيارات المعدلة والمخصصة";
-  const pageDesc = (settings as Record<string, string>).page_cars_desc || "تصفح جميع السيارات المعدلة والرسم والمحدودة الإصدار بأعلى جودة";
 
   const carCategories = [
     { title: "سيارات معدلة وسرعة 1695HP", slug: "modified", icon: Gauge, count: modifiedCars.totalCount, color: "text-orange-500" },
     { title: "سيارات رسم وتصميمات خاصة (Drawn)", slug: "drawn", icon: Palette, count: drawnCars.totalCount, color: "text-orange-400" },
     { title: "سيارات لوجوهات واقعية وPolice", slug: "realistic-logos", icon: Sparkles, count: realisticCars.totalCount, color: "text-green-400" },
     { title: "سيارات نادرة ومحدودة (Limited)", slug: "limited", icon: Flame, count: limitedCars.totalCount, color: "text-red-400" },
-    { title: "سيارات ستوك وكلاسيك الأصلية", slug: "stock", icon: Car, count: stockCars.totalCount, color: "text-yellow-400" },
   ];
 
+  const settings: Record<string, string> = await getStoreSettings().catch(() => ({}));
+  const pageTitle = settings.page_cars_title || "أسطول سيارات Car Parking";
+  const pageDesc = settings.page_cars_desc || "تصفح واشترِ أقوى سيارات كار باركينج المعدلة بقوة 1695HP وسيارات الرسم الحصرية";
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 text-right space-y-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-right space-y-12">
       {/* Header */}
-      <div className="space-y-2 border-b border-gray-800 pb-4">
+      <div className="space-y-2">
         <span className="text-xs font-mono font-bold text-orange-500 uppercase tracking-widest">
           Car Parking Multiplayer Fleet
         </span>
-        <h1 className="text-2xl sm:text-4xl font-black text-white">{pageTitle}</h1>
+        <h1 className="text-3xl sm:text-5xl font-black text-white">{pageTitle}</h1>
         <p className="text-xs sm:text-sm text-gray-400">{pageDesc}</p>
       </div>
 
