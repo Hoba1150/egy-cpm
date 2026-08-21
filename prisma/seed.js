@@ -18,11 +18,13 @@ async function main() {
     await prisma.orderItem.deleteMany({});
     await prisma.order.deleteMany({});
     await prisma.depositRequest.deleteMany({});
-    await prisma.transaction.deleteMany({});
+    await prisma.walletTransaction.deleteMany({});
     await prisma.wallet.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.category.deleteMany({});
     await prisma.storeSetting.deleteMany({});
+    await prisma.giveawayEntry.deleteMany({});
+    await prisma.giveaway.deleteMany({});
     await prisma.user.deleteMany({});
   } catch (e) {
     console.log("Cleanup warning:", e.message);
@@ -30,7 +32,7 @@ async function main() {
 
   const crypto = require("crypto");
   function encryptData(text) {
-    const secret = process.env.ENCRYPTION_SECRET_KEY || "cpm_secure_32_byte_aes_key_cpm_2026!";
+    const secret = process.env.ENCRYPTION_SECRET_KEY || "cpm_garage_ultra_secure_secret_key_2026_super_production_encryption";
     const key = crypto.createHash("sha256").update(String(secret)).digest();
     const iv = crypto.randomBytes(12);
     const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
@@ -57,7 +59,7 @@ async function main() {
     },
   });
 
-  const orderManager = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: "manager@cpmgarage.com",
       name: "Fulfillment Officer",
@@ -93,24 +95,30 @@ async function main() {
     },
   });
 
-  // Initial Wallet Transactions
-  await prisma.transaction.create({
+  // Initial Wallet Transactions (using correct model name: walletTransaction)
+  await prisma.walletTransaction.create({
     data: {
       walletId: customerWallet.id,
       type: "DEPOSIT",
       amount: 1500.0,
-      balanceAfter: 1500.0,
+      beforeBalance: 0.0,
+      afterBalance: 1500.0,
+      beforeGiftBalance: 0.0,
+      afterGiftBalance: 0.0,
       description: "إيداع ناجح عبر فودافون كاش - طلب رقم DEP-2026-101",
       referenceId: "DEP-2026-101",
     },
   });
 
-  await prisma.transaction.create({
+  await prisma.walletTransaction.create({
     data: {
       walletId: customerWallet.id,
       type: "GIFT",
       amount: 200.0,
-      balanceAfter: 1700.0,
+      beforeBalance: 1500.0,
+      afterBalance: 1500.0,
+      beforeGiftBalance: 0.0,
+      afterGiftBalance: 200.0,
       description: "هدية افتتاحية ترحيبية من إدارة المتجر",
       referenceId: "ADMIN-GIFT-INIT",
     },
@@ -124,6 +132,7 @@ async function main() {
       description: "سيارات مجهزة بأقوى تزويد محركات W16 وقوة 1695 حصان وتظبيط دريفت ودراج احترافي.",
       icon: "Gauge",
       order: 1,
+      isActive: true,
       image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800",
     },
     {
@@ -132,6 +141,7 @@ async function main() {
       description: "سيارات برسم أنمي، ستيكرات ثلاثية الأبعاد وDesign فينيل فائق الدقة لا يوجد في المتجر العادي.",
       icon: "Palette",
       order: 2,
+      isActive: true,
       image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800",
     },
     {
@@ -140,6 +150,7 @@ async function main() {
       description: "لوجوهات سيارات حقيقية معتمدة مثل Red Bull, Monster Energy, Supreme, Gucci, Police.",
       icon: "Sparkles",
       order: 3,
+      isActive: true,
       image: "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=800",
     },
     {
@@ -148,6 +159,7 @@ async function main() {
       description: "سيارات مخصصة بأعداد حصرية مع لمسات كروم وذهب وأرقام شاسيه مميزة.",
       icon: "Flame",
       order: 4,
+      isActive: true,
       image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800",
     },
     {
@@ -156,6 +168,7 @@ async function main() {
       description: "جميع سيارات اللعبة الأصلية بحالة الوكالة ومفتوحة بالكامل وجاهزة للاستلام الفوري.",
       icon: "Car",
       order: 5,
+      isActive: true,
       image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800",
     },
     {
@@ -164,6 +177,7 @@ async function main() {
       description: "شحن أموال خضراء 50M، كوينز ذهبي، تفعيل الكينج رانك، تغيير الآي دي وفتح جميع التعديلات.",
       icon: "Zap",
       order: 6,
+      isActive: true,
       image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800",
     },
     {
@@ -172,20 +186,19 @@ async function main() {
       description: "حسابات متكاملة تحتوي على جميع السيارات مفتوحة ومعدلة + كينج رانك + فلوس ماكس + تسليم فوري.",
       icon: "ShieldCheck",
       order: 7,
+      isActive: true,
       image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800",
     },
   ];
 
   const categories = {};
   for (const cat of categoriesData) {
-    const { icon, ...cleanCat } = cat;
-    const created = await prisma.category.create({ data: cleanCat });
+    const created = await prisma.category.create({ data: cat });
     categories[cat.slug] = created.id;
   }
 
   // 3. Create Products
   const productsData = [
-    // --- Cars ---
     {
       name: "BMW M8 Competition - 1695HP W16 Police Monster",
       slug: "bmw-m8-competition-1695hp",
@@ -203,13 +216,7 @@ async function main() {
         "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800",
       ]),
       description: "وحش السرعة والدريفت في كار باركينج! بي إم دبليو M8 مزودة بمحرك W16 بقوة 1695 حصان، فليشر بوليس أصلي، دخان إطارات بنفسجي وتظبيط جيربوكس احترافي لسباقات الدراج والهاي واي.",
-      detailedSpecs: JSON.stringify({
-        horsePower: "1695 HP (W16 Engine)",
-        torque: "2254 Nm",
-        gearbox: "Custom Drag & Drift 7-Speed",
-        extras: "Police Flashers, Triple Color Smoke, BBS Wheels, Full Bodykit",
-        antiBan: "100% Guaranteed Safe",
-      }),
+      detailedSpecs: JSON.stringify({ horsePower: "1695 HP (W16 Engine)", extras: "Police Flashers, Triple Color Smoke, BBS Wheels" }),
     },
     {
       name: "Nissan Skyline GT-R R34 - Paul Walker 2 Fast 2 Furious",
@@ -227,13 +234,8 @@ async function main() {
         "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=800",
         "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800",
       ]),
-      description: "الأسطورة اليابانية نيسان سكايلاين R34 بنفس رسمة وتصميم فيلم فاست آند فيوريوس الأيقونية. تفاصيل خطوط النيون الزرقاء والسبويلر الكربوني بدقة متناهية تفوق 300 لاير رسم.",
-      detailedSpecs: JSON.stringify({
-        vinylLayers: "320 Vinyl Layers Ultra HD",
-        horsePower: "1695 HP Engine",
-        extras: "Underglow Blue Neon, GReddy Exhaust, C-West Bodykit",
-        paintType: "Metallic Silver with Pearl Blue Stripes",
-      }),
+      description: "الأسطورة اليابانية نيسان سكايلاين R34 بنفس رسمة وتصميم فيلم فاست آند فيوريوس الأيقونية.",
+      detailedSpecs: JSON.stringify({ vinylLayers: "320 Vinyl Layers Ultra HD", horsePower: "1695 HP Engine" }),
     },
     {
       name: "Mercedes-AMG G63 Mansory 6x6 - Gold Edition",
@@ -252,13 +254,8 @@ async function main() {
         "https://images.unsplash.com/photo-1520031441872-265e4ff70366?w=800",
         "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800",
       ]),
-      description: "إصدار محدود للغاية! مرسيدس جي كلاس مانصوري 6 عجلات مطلي بذهب عيار 24 مع جنوط فورجد وتعديل شاسيه مرتفع للاستعراض والهيبة المطلقة في أي سيرفر.",
-      detailedSpecs: JSON.stringify({
-        edition: "Mansory 1 of 10 Exclusive",
-        horsePower: "1695 HP Biturbo",
-        wheels: "6x6 Offroad Heavy Duty Forged",
-        extras: "Roof LED Lightbar, Carbon Hood, Golden Exhaust Tips",
-      }),
+      description: "إصدار محدود للغاية! مرسيدس جي كلاس مانصوري 6 عجلات مطلي بذهب عيار 24 مع جنوط فورجد.",
+      detailedSpecs: JSON.stringify({ edition: "Mansory 1 of 10 Exclusive", horsePower: "1695 HP Biturbo" }),
     },
     {
       name: "Dodge Charger SRT Hellcat - Red Eye Monster Police",
@@ -272,15 +269,9 @@ async function main() {
       isBestSeller: true,
       deliveryTimeMinutes: 10,
       stockType: "UNLIMITED",
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=800",
-      ]),
-      description: "دوج تشارجر ريد آي مع لوجو SRT وHellcat الأصلي، مزودة بفليشر بوليس أمريكي ونداءات طوارئ وصوت هلكات جبار.",
-      detailedSpecs: JSON.stringify({
-        horsePower: "1695 HP Supercharged",
-        logos: "Official SRT Hellcat High-Res Badges",
-        extras: "Police Sirens & Flashers, Blackout Tint",
-      }),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=800"]),
+      description: "دوج تشارجر ريد آي مع لوجو SRT وHellcat الأصلي، مزودة بفليشر بوليس أمريكي.",
+      detailedSpecs: JSON.stringify({ horsePower: "1695 HP Supercharged", logos: "Official SRT Hellcat High-Res Badges" }),
     },
     {
       name: "Toyota Supra MK4 1998 - 2JZ Flame Beast",
@@ -293,15 +284,9 @@ async function main() {
       isFeatured: true,
       deliveryTimeMinutes: 10,
       stockType: "UNLIMITED",
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=800",
-      ]),
-      description: "تويوتا سوبرا MK4 الأسطورية محرك 2JZ معدل 1695HP مع باك فاير وشعلات نار مستمرة وشكمان تيتانيوم.",
-      detailedSpecs: JSON.stringify({
-        engine: "2JZ-GTE Twin Turbo Mod",
-        horsePower: "1695 HP",
-        smoke: "Toxic Green & Red Exhaust Flame",
-      }),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=800"]),
+      description: "تويوتا سوبرا MK4 الأسطورية محرك 2JZ معدل 1695HP مع باك فاير وشعلات نار مستمرة.",
+      detailedSpecs: JSON.stringify({ engine: "2JZ-GTE Twin Turbo Mod", horsePower: "1695 HP" }),
     },
     {
       name: "Porsche 911 GT3 RS - Track Weapon Shark Blue",
@@ -314,18 +299,10 @@ async function main() {
       isFeatured: false,
       deliveryTimeMinutes: 10,
       stockType: "UNLIMITED",
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800",
-      ]),
-      description: "بورشه 911 جي تي 3 آر إس أصلية بلون شارك بلو النادر مع جناح ديناميكي وتوجيه دقيق للغاية للمنعطفات.",
-      detailedSpecs: JSON.stringify({
-        horsePower: "1695 HP Track Spec",
-        handling: "Maximum Grip Stance",
-        color: "Shark Blue Pearl",
-      }),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800"]),
+      description: "بورشه 911 جي تي 3 آر إس أصلية بلون شارك بلو النادر مع جناح ديناميكي.",
+      detailedSpecs: JSON.stringify({ horsePower: "1695 HP Track Spec", color: "Shark Blue Pearl" }),
     },
-
-    // --- Services ---
     {
       name: "شحن 50 مليون دولار كاش (50,000,000 Green Money)",
       slug: "service-50m-green-money",
@@ -338,16 +315,9 @@ async function main() {
       isBestSeller: true,
       deliveryTimeMinutes: 5,
       stockType: "UNLIMITED",
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800",
-      ]),
-      description: "إضافة 50,000,000 كاش أخضر في حسابك في أقل من 5 دقائق وبطريقة رسمية 100% آمنة تماماً وبدون أي ريسك باند.",
-      detailedSpecs: JSON.stringify({
-        amount: "50,000,000$",
-        deliverySpeed: "5 to 10 minutes",
-        method: "Direct in-game secure injection",
-        safety: "100% Anti-Ban Protection",
-      }),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800"]),
+      description: "إضافة 50,000,000 كاش أخضر في حسابك في أقل من 5 دقائق وبطريقة رسمية 100% آمنة.",
+      detailedSpecs: JSON.stringify({ amount: "50,000,000$", deliverySpeed: "5 to 10 minutes", safety: "100% Anti-Ban Protection" }),
       serviceRequirements: "يتطلب إرسال البريد وكلمة السر للعبة كار باركينج في شاشة الدفع.",
     },
     {
@@ -362,15 +332,9 @@ async function main() {
       isBestSeller: true,
       deliveryTimeMinutes: 10,
       stockType: "UNLIMITED",
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=800",
-      ]),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=800"]),
       description: "شحن 40 ألف كوينز لشراء أي سيارة دفع، وتفعيل البودي كيتات وشراء تصاميم الماركت بليس الرسمية.",
-      detailedSpecs: JSON.stringify({
-        amount: "40,000 Coins",
-        useFor: "Paid Cars, Custom Kits, Horns, Smokes",
-        safety: "Safe & Permanent",
-      }),
+      detailedSpecs: JSON.stringify({ amount: "40,000 Coins", safety: "Safe & Permanent" }),
       serviceRequirements: "يتطلب إرسال حساب اللعبة في صفحة الدفع.",
     },
     {
@@ -385,14 +349,9 @@ async function main() {
       isBestSeller: true,
       deliveryTimeMinutes: 10,
       stockType: "UNLIMITED",
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1563089145-599997674d42?w=800",
-      ]),
-      description: "فتح التاج الذهبي الملكي (King Rank) بجانب اسمك ورقمك في السيرفرات وإمكانية إعطاء أوامر وطرد اللاعبين المخالفين.",
-      detailedSpecs: JSON.stringify({
-        rank: "Official King Rank Crown",
-        features: "Gold Crown in Chat, Server VIP Status, Exclusive Animation",
-      }),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1563089145-599997674d42?w=800"]),
+      description: "فتح التاج الذهبي الملكي (King Rank) بجانب اسمك ورقمك في السيرفرات.",
+      detailedSpecs: JSON.stringify({ rank: "Official King Rank Crown", features: "Gold Crown in Chat, Server VIP Status" }),
       serviceRequirements: "حساب اللعبة (إيميل وباسورد).",
     },
     {
@@ -406,14 +365,9 @@ async function main() {
       isFeatured: false,
       deliveryTimeMinutes: 15,
       stockType: "UNLIMITED",
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=800",
-      ]),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=800"]),
       description: "تزويد كل سيارات حسابك بمحرك W16 1695HP بدون الحاجة لدفع كوينز لكل سيارة على حدة.",
-      detailedSpecs: JSON.stringify({
-        coverage: "All existing cars in your garage",
-        power: "Maxed Out 1695 HP",
-      }),
+      detailedSpecs: JSON.stringify({ coverage: "All existing cars in your garage", power: "Maxed Out 1695 HP" }),
       serviceRequirements: "حساب اللعبة.",
     },
     {
@@ -427,18 +381,11 @@ async function main() {
       isFeatured: false,
       deliveryTimeMinutes: 10,
       stockType: "UNLIMITED",
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800",
-      ]),
-      description: "اختر ID مخصص لحسابك (أرقام مميزة مثل 777777 أو اسمك الشخصي) ليظهر بشكل فخم ومميز للجميع.",
-      detailedSpecs: JSON.stringify({
-        customization: "Custom 6-8 digit or alphabetic ID",
-        permanence: "Permanent VIP ID",
-      }),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800"]),
+      description: "اختر ID مخصص لحسابك (أرقام مميزة مثل 777777 أو اسمك الشخصي).",
+      detailedSpecs: JSON.stringify({ customization: "Custom 6-8 digit or alphabetic ID", permanence: "Permanent VIP ID" }),
       serviceRequirements: "الحساب + الـ ID الجديد المطلوب.",
     },
-
-    // --- Accounts ---
     {
       name: "حساب VIP King Account - 150 سيارة معدلة + 50M كاش + 40k كوينز",
       slug: "account-vip-king-150-cars",
@@ -456,15 +403,9 @@ async function main() {
         "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800",
         "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800",
       ]),
-      description: "الحساب الحلم! حساب جاهز بالكامل يحتوي على 150 سيارة خارقة معدلة 1695HP، كينج رانك دائم، 50 مليون كاش أخضر، 40 ألف كوينز ذهبي وتسليم فوري لبيانات الحساب بعد الشراء.",
-      detailedSpecs: JSON.stringify({
-        carsCount: "150 Cars Maxed Out (Vinyls + W16)",
-        cash: "50,000,000 $",
-        coins: "40,000 Coins",
-        rank: "King Rank Crown",
-        security: "Full Email Transfer / Changeable Password",
-      }),
-      accountDetailsEncrypted: "cpm_king_vip_acc_2026@gmail.com:PassKing#9982",
+      description: "الحساب الحلم! حساب جاهز بالكامل يحتوي على 150 سيارة خارقة معدلة 1695HP، كينج رانك دائم، 50 مليون كاش أخضر.",
+      detailedSpecs: JSON.stringify({ carsCount: "150 Cars Maxed Out", cash: "50,000,000 $", coins: "40,000 Coins", rank: "King Rank Crown" }),
+      accountDetailsEncrypted: encryptData("cpm_king_vip_acc_2026@gmail.com:PassKing#9982"),
     },
     {
       name: "حساب أسطوري توب رانك - سيارات بوليس كاملة + مرسومة بالكامل",
@@ -479,23 +420,15 @@ async function main() {
       deliveryTimeMinutes: 5,
       stockType: "UNIQUE_DIGITAL",
       stockQuantity: 1,
-      images: JSON.stringify([
-        "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800",
-      ]),
+      images: JSON.stringify(["https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800"]),
       description: "حساب النخبة يحتوي على 160 سيارة جميعها بفليشر بوليس ورسومات أنمي ولوجوهات عالمية + ماكس موني.",
-      detailedSpecs: JSON.stringify({
-        carsCount: "160 Police & Drawn Cars",
-        cash: "50,000,000 $",
-        coins: "35,000 Coins",
-        rank: "King Rank",
-      }),
-      accountDetailsEncrypted: "cpm_police_legend_acc@gmail.com:PoliceLegend#771",
+      detailedSpecs: JSON.stringify({ carsCount: "160 Police & Drawn Cars", cash: "50,000,000 $", coins: "35,000 Coins", rank: "King Rank" }),
+      accountDetailsEncrypted: encryptData("cpm_police_legend_acc@gmail.com:PoliceLegend#771"),
     },
   ];
 
   for (const prod of productsData) {
-    const { detailedSpecs, accountDetailsEncrypted, ...cleanProd } = prod;
-    await prisma.product.create({ data: cleanProd });
+    await prisma.product.create({ data: prod });
   }
 
   // 4. Create Coupons
@@ -505,8 +438,10 @@ async function main() {
       discountType: "PERCENTAGE",
       discountValue: 15.0,
       minOrderAmount: 100.0,
+      minOrderValue: 100.0,
       maxDiscount: 150.0,
       usageLimit: 500,
+      maxUses: 500,
       isActive: true,
     },
   });
@@ -517,6 +452,12 @@ async function main() {
     { key: "vodafone_cash", value: "01288212101" },
     { key: "currency", value: "ج.م" },
     { key: "announcement_center", value: "تسليم فوري لجميع الخدمات والسيارات | كود الخصم: CPM2026 خصم 15% | رقم الإيداع: 01288212101" },
+    { key: "page_cars_title", value: "أسطول سيارات Car Parking" },
+    { key: "page_cars_desc", value: "تصفح واشترِ أقوى سيارات كار باركينج المعدلة" },
+    { key: "page_services_title", value: "خدمات الشحن وزيادة الرتبة" },
+    { key: "page_services_desc", value: "خدمات شحن الكاش وزيادة الرتبة في Car Parking بأسرع تسليم" },
+    { key: "page_accounts_title", value: "حسابات Car Parking المميزة" },
+    { key: "page_accounts_desc", value: "حسابات جاهزة بالسيارات والكاش وأعلى الرتب بتسليم فوري" },
   ];
 
   for (const set of settingsData) {
@@ -533,6 +474,7 @@ async function main() {
         rating: 5,
         comment: "السيارة خرافية وسرعتها صاروخ بالدراج! التسليم كان فوري ومضمون 100%. أفضل متجر لكار باركينج بلا منازع",
         isApproved: true,
+        isHidden: false,
       },
     });
   }
@@ -545,7 +487,7 @@ async function main() {
       action: "INITIALIZE_DATABASE",
       targetType: "SYSTEM",
       targetId: "SYSTEM_INIT",
-      afterValue: JSON.stringify({ status: "SUCCESS", version: "1.0.0" }),
+      afterValue: JSON.stringify({ status: "SUCCESS", version: "2.0.0" }),
     },
   });
 
