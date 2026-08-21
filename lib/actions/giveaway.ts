@@ -32,8 +32,8 @@ export async function enterGiveaway(data: {
     });
 
     if (!giveaway) throw new Error("السحب غير موجود.");
-    if (giveaway.status !== "ACTIVE" || new Date() > new Date(giveaway.endDate)) {
-      throw new Error("عذراً، هذا السحب منتهي.");
+    if (giveaway.status !== "ACTIVE") {
+      throw new Error("عذراً، هذا السحب منتهي أو غير نشط.");
     }
 
     // Check duplicate phone entry
