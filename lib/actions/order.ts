@@ -72,10 +72,14 @@ export async function createOrder(input: CreateOrderInput) {
 
     orderItemsData.push({
       productId: prod.id,
+      name: prod.name,
+      price: prod.price,
+      quantity: item.quantity,
+      productType: prod.productType,
       productName: prod.name,
       productPrice: prod.price,
-      quantity: item.quantity,
       total: itemTotal,
+      serviceRequirements: prod.serviceRequirements || null,
       deliveredDataEncrypted: prod.accountDetailsEncrypted || null,
     });
   }
