@@ -389,14 +389,56 @@ export default function ProductManagerClient({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">رابط صورة المنتج (Image URL) *</label>
-                <input
-                  type="url"
-                  required
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white text-right dir-ltr font-mono"
-                />
+                <label className="block text-xs font-medium text-gray-300 mb-1">صورة المنتج / السيارة *</label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="product-image-file"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 2 * 1024 * 1024) {
+                            toast.error("حجم الصورة كبير، يفضل اختيار صورة أقل من 2 ميجابايت.");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            setImageUrl(event.target?.result as string);
+                            toast.success("تم رفع الصورة بنجاح.");
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <label
+                      htmlFor="product-image-file"
+                      className="px-3 py-2 bg-orange-500 hover:bg-orange-600 text-black font-bold text-xs rounded-xl cursor-pointer transition flex items-center gap-1.5 shrink-0"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>اختر صورة من جهازك</span>
+                    </label>
+                    <span className="text-[11px] text-gray-400">أو ضع الرابط مباشرة</span>
+                  </div>
+
+                  <input
+                    type="text"
+                    required
+                    placeholder="رابط الصورة أو سيتم وضع الصورة المرفوعة تلقائياً هنا..."
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    className="w-full px-3.5 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white text-right dir-ltr font-mono"
+                  />
+
+                  {imageUrl && (
+                    <div className="mt-1 flex items-center gap-2 p-1.5 rounded-lg bg-black/50 border border-gray-800">
+                      <img src={imageUrl} alt="معاينة" className="w-12 h-12 object-cover rounded-md border border-gray-700" />
+                      <span className="text-[10px] text-gray-400">معاينة الصورة الحالية</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-2 pt-2">
