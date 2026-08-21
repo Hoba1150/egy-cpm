@@ -88,7 +88,10 @@ export async function enterGiveaway(data: {
             create: {
               type: "PURCHASE",
               amount: giveaway.entryFee,
-              balanceAfter: newBalance + newGift,
+              beforeBalance: wallet.balance,
+              afterBalance: newBalance,
+              beforeGiftBalance: wallet.giftBalance,
+              afterGiftBalance: newGift,
               description: `رسوم الاشتراك في سحب: ${giveaway.title}`,
             },
           },
