@@ -6,6 +6,7 @@ import { Headphones, PlusCircle, MessageSquare, Clock, CheckCircle2, AlertCircle
 import { formatDate } from "@/lib/utils";
 import NewTicketForm from "./NewTicketForm";
 
+import { getStoreSettings } from "@/lib/actions/settings";
 export const dynamic = "force-dynamic";
 
 interface SupportPageProps {
@@ -16,6 +17,10 @@ interface SupportPageProps {
 
 export default async function SupportPage({ searchParams }: SupportPageProps) {
   const user = await getCurrentUser();
+
+  const settings: Record<string, string> = await getStoreSettings().catch(() => ({}));
+  const pageTitle = settings.page_support_title || "الدعم الفني والمساعدة";
+  const pageDesc = settings.page_support_desc || "فريق الدعم متاح 24/7 للرد على استفساراتك وحل مشاكلك";
 
   const tickets = user
     ? await prisma.supportTicket.findMany({
@@ -33,11 +38,11 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "ANSWERED":
-        return <span className="px-2 py-0.5 rounded bg-green-500/20 text-neon-green border border-green-500/30 text-xs font-bold">تم الرد 💬</span>;
+        return <span className="px-2 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30 text-xs font-bold">تم الرد 💬</span>;
       case "CLOSED":
         return <span className="px-2 py-0.5 rounded bg-gray-800 text-gray-400 text-xs">مغلقة</span>;
       default:
-        return <span className="px-2 py-0.5 rounded bg-amber-500/20 text-neon-amber border border-amber-500/30 text-xs font-bold animate-pulse">قيد المراجعة ⏳</span>;
+        return <span className="px-2 py-0.5 rounded bg-amber-500/20 text-yellow-400 border border-amber-500/30 text-xs font-bold animate-pulse">قيد المراجعة ⏳</span>;
     }
   };
 
@@ -45,23 +50,20 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-right space-y-10">
       {/* Header */}
       <div className="space-y-2 border-b border-gray-800 pb-4">
-        <span className="text-xs font-mono font-bold text-neon-cyan uppercase">
+        <span className="text-xs font-mono font-bold text-orange-500 uppercase">
           Customer Support Center
         </span>
-        <h1 className="text-2xl sm:text-4xl font-black text-white">
-          مركز الدعم الفني والتذاكر المباشرة
-        </h1>
+        <h1 className="text-2xl sm:text-4xl font-black text-white">{pageTitle}</h1>
         <p className="text-xs sm:text-sm text-gray-400">
-          فريق دعم متخصص متواجد 24/7 لمساعدتك في أي استفسار أو مشكلة متعلقة بالطلبات والشحن.
-        </p>
+          {pageDesc}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Create Ticket Form (Right) */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="p-6 rounded-3xl bg-garage-900 border border-cyan-500/30 shadow-glow-cyan-sm space-y-4">
+          <div className="p-6 rounded-2xl bg-[#12161f] border border-orange-500/30  space-y-4">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <PlusCircle className="w-5 h-5 text-neon-cyan" />
+              <PlusCircle className="w-5 h-5 text-orange-500" />
               <span>فتح تذكرة دعم فني جديدة</span>
             </h2>
 
@@ -71,9 +73,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
 
         {/* Existing Tickets List (Left) */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="p-6 rounded-3xl bg-garage-900/90 border border-gray-800 space-y-4">
+          <div className="p-6 rounded-2xl bg-[#12161f] border border-gray-800 space-y-4">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-neon-purple" />
+              <MessageSquare className="w-5 h-5 text-orange-400" />
               <span>تذاكري السابقة ({tickets.length})</span>
             </h2>
 
@@ -91,16 +93,16 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                   <Link
                     key={t.id}
                     href={`/support/${t.ticketNumber}`}
-                    className="p-4 rounded-2xl bg-garage-850 border border-gray-800 hover:border-cyan-500/40 transition block space-y-2 group"
+                    className="p-4 rounded-2xl bg-[#1a202c] border border-gray-800 hover:border-orange-500/30 transition block space-y-2 group"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-neon-cyan">
+                      <span className="font-mono text-xs font-bold text-orange-500">
                         #{t.ticketNumber}
                       </span>
                       {getStatusBadge(t.status)}
                     </div>
 
-                    <h4 className="text-sm font-bold text-white group-hover:text-neon-cyan transition">
+                    <h4 className="text-sm font-bold text-white group-hover:text-orange-500 transition">
                       {t.subject}
                     </h4>
 
