@@ -106,10 +106,6 @@ export default function DepositPage() {
         body: formData,
       });
 
-  const settings: Record<string, string> = await getStoreSettings().catch(() => ({}));
-  const pageTitle = settings.page_deposit_title || "شحن رصيد المحفظة";
-  const pageDesc = settings.page_deposit_desc || "اشحن محفظتك عبر فودافون كاش، أورنج، اتصالات أو وي باي للشراء الفوري";
-
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok || !uploadData.url) {
         throw new Error(uploadData.message || "فشل رفع صورة التحويل");
@@ -143,9 +139,9 @@ export default function DepositPage() {
           <span className="text-xs font-mono font-bold text-green-400 uppercase">
             Wallet Deposit & Recharge
           </span>
-          <h1 className="text-2xl sm:text-4xl font-black text-white">{pageTitle}</h1>
+          <h1 className="text-2xl sm:text-4xl font-black text-white">شحن رصيد المحفظة</h1>
           <p className="text-xs sm:text-sm text-gray-400">
-            {pageDesc}</p>
+            اشحن محفظتك بسهولة عبر فودافون كاش، أورنج، اتصالات، أو وي باي للشراء الفوري.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
