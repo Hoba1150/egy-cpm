@@ -74,7 +74,7 @@ export default function NewTicketForm({
             placeholder="مثال: استفسار بخصوص تسليم سيارة M8"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right"
+            className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-orange-500 text-right"
           />
         </div>
 
@@ -86,7 +86,7 @@ export default function NewTicketForm({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as any)}
-              className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+              className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right"
             >
               <option value="ORDER">مشكلة أو استفسار بطلب (Order)</option>
               <option value="DEPOSIT">شحن وإيداع المحفظة (Deposit)</option>
@@ -105,7 +105,7 @@ export default function NewTicketForm({
               placeholder="CPM-ORD-XXXXX أو DEP-XXXX"
               value={relatedId}
               onChange={(e) => setRelatedId(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right font-mono"
+              className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-orange-500 text-right font-mono"
             />
           </div>
         </div>
@@ -120,14 +120,14 @@ export default function NewTicketForm({
             placeholder="اشرح مشكلتك بالتفصيل ليتمكن فريق الدعم من مساعدتك بأسرع وقت..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full p-3 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right"
+            className="w-full p-3 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-orange-500 text-right"
           />
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-3.5 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-bold text-xs shadow-glow-cyan hover:scale-[1.01] active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3.5 rounded-xl bg-orange-500 text-black font-bold text-xs  hover:scale-[1.01] active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isSubmitting ? (
             <Loader2 className="w-4 h-4 animate-spin" />
