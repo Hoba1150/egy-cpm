@@ -196,14 +196,14 @@ export default function CustomerCrmClient({
             placeholder="ابحث بالاسم، الإيميل، أو رقم الهاتف..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-4 pr-10 py-2.5 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right"
+            className="w-full pl-4 pr-10 py-2.5 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-orange-500 text-right"
           />
           <Search className="w-4 h-4 absolute right-3.5 top-3 text-gray-400" />
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-3xl bg-garage-900 border border-gray-800 overflow-hidden">
+      <div className="rounded-2xl bg-[#12161f] border border-gray-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-right text-xs">
             <thead>
@@ -224,7 +224,7 @@ export default function CustomerCrmClient({
                 const displayPwd = c.decryptedPassword || (c.passwordHash ? "[مشفرة bcrypt]" : "غير محددة");
 
                 return (
-                  <tr key={c.id} className="hover:bg-garage-850/50 transition">
+                  <tr key={c.id} className="hover:bg-[#1a202c]/50 transition">
                     {/* User Info */}
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -237,7 +237,7 @@ export default function CustomerCrmClient({
                           <div className="flex items-center gap-1.5">
                             <span className="font-bold text-white block">{c.name || "جيمر"}</span>
                             {c.role !== "CUSTOMER" && (
-                              <span className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-neon-cyan text-[9px] font-mono font-bold">
+                              <span className="px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-500 text-[9px] font-mono font-bold">
                                 {c.role}
                               </span>
                             )}
@@ -256,13 +256,13 @@ export default function CustomerCrmClient({
                     {/* Password View & Edit */}
                     <td className="p-4">
                       <div className="flex items-center gap-2 font-mono">
-                        <span className="text-neon-cyan font-bold bg-garage-950 px-2 py-1 rounded-lg border border-gray-800 text-[11px]">
+                        <span className="text-orange-500 font-bold bg-garage-950 px-2 py-1 rounded-lg border border-gray-800 text-[11px]">
                           {isRevealed ? displayPwd : "••••••••"}
                         </span>
                         <button
                           type="button"
                           onClick={() => togglePasswordReveal(c.id)}
-                          className="p-1 rounded-lg bg-garage-800 hover:bg-gray-700 text-gray-300 hover:text-white transition"
+                          className="p-1 rounded-lg bg-[#1a202c] hover:bg-gray-700 text-gray-300 hover:text-white transition"
                           title={isRevealed ? "إخفاء كلمة المرور" : "كشف كلمة المرور"}
                         >
                           {isRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -273,7 +273,7 @@ export default function CustomerCrmClient({
                             setPwdCustomer(c);
                             setNewPassword("");
                           }}
-                          className="p-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-neon-cyan border border-cyan-500/30 transition"
+                          className="p-1 rounded-lg bg-orange-500/10 hover:bg-orange-500/10 text-orange-500 border border-orange-500/30 transition"
                           title="تغيير كلمة مرور العميل"
                         >
                           <Key className="w-3.5 h-3.5" />
@@ -282,10 +282,10 @@ export default function CustomerCrmClient({
                     </td>
 
                     {/* Balances */}
-                    <td className="p-4 font-bold text-sm text-neon-green font-mono">
+                    <td className="p-4 font-bold text-sm text-green-400 font-mono">
                       {formatCurrency(c.wallet?.balance || 0)}
                     </td>
-                    <td className="p-4 font-bold text-sm text-neon-purple font-mono">
+                    <td className="p-4 font-bold text-sm text-orange-400 font-mono">
                       {formatCurrency(c.wallet?.giftBalance || 0)}
                     </td>
                     <td className="p-4 text-gray-300 font-mono text-xs">
@@ -301,7 +301,7 @@ export default function CustomerCrmClient({
                       <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => setGiftCustomer(c)}
-                          className="px-2 py-1 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-neon-purple border border-purple-500/30 text-xs font-bold transition flex items-center gap-1"
+                          className="px-2 py-1 rounded-lg bg-orange-500/10 hover:bg-orange-500/10 text-orange-400 border border-orange-500/20 text-xs font-bold transition flex items-center gap-1"
                           title="منح رصيد هدية"
                         >
                           <Gift className="w-3.5 h-3.5" />
@@ -315,7 +315,7 @@ export default function CustomerCrmClient({
                             setAdjustAmount(100);
                             setAdjustReason("");
                           }}
-                          className="px-2 py-1 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-neon-green border border-green-500/30 text-xs font-bold transition flex items-center gap-1"
+                          className="px-2 py-1 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 text-xs font-bold transition flex items-center gap-1"
                           title="تعديل الرصيد يدوياً"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -331,7 +331,7 @@ export default function CustomerCrmClient({
                             className={`px-2 py-1 rounded-lg border text-xs font-bold transition flex items-center gap-1 ${
                               c.role !== "CUSTOMER"
                                 ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30"
-                                : "bg-cyan-500/10 hover:bg-cyan-500/20 text-neon-cyan border-cyan-500/30"
+                                : "bg-orange-500/10 hover:bg-orange-500/10 text-orange-500 border-orange-500/30"
                             }`}
                             title="تغيير رتبة وصلاحيات الحساب"
                           >
@@ -363,9 +363,9 @@ export default function CustomerCrmClient({
       {/* Change Password Modal */}
       {pwdCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
-          <div className="relative max-w-md w-full bg-[#0c1017] border border-cyan-500/40 rounded-3xl p-6 shadow-glow-cyan text-right space-y-4">
+          <div className="relative max-w-md w-full bg-[#0c1017] border border-orange-500/30 rounded-2xl p-6  text-right space-y-4">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Key className="w-5 h-5 text-neon-cyan" />
+              <Key className="w-5 h-5 text-orange-500" />
               <span>تغيير كلمة مرور العميل ({pwdCustomer.name || pwdCustomer.email})</span>
             </h3>
 
@@ -385,7 +385,7 @@ export default function CustomerCrmClient({
                   placeholder="اكتب كلمة مرور جديدة..."
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right font-mono"
+                  className="w-full px-3.5 py-2.5 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right font-mono"
                 />
               </div>
 
@@ -393,14 +393,14 @@ export default function CustomerCrmClient({
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-extrabold text-xs shadow-glow-cyan transition disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-orange-500 text-black font-extrabold text-xs  transition disabled:opacity-50"
                 >
                   {isProcessing ? "جاري الحفظ..." : "حفظ كلمة المرور الجديدة 🔑"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setPwdCustomer(null)}
-                  className="px-4 py-2.5 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-[#1a202c] text-gray-300 text-xs font-bold"
                 >
                   إلغاء
                 </button>
@@ -413,9 +413,9 @@ export default function CustomerCrmClient({
       {/* Gift Balance Modal */}
       {giftCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="relative max-w-md w-full bg-[#0c1017] border border-purple-500/40 rounded-3xl p-6 shadow-glow-purple text-right space-y-4">
+          <div className="relative max-w-md w-full bg-[#0c1017] border border-orange-500/30 rounded-2xl p-6  text-right space-y-4">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Gift className="w-5 h-5 text-neon-purple" />
+              <Gift className="w-5 h-5 text-orange-400" />
               <span>منح رصيد هدية لحساب ({giftCustomer.name || giftCustomer.email})</span>
             </h3>
 
@@ -430,7 +430,7 @@ export default function CustomerCrmClient({
                   min={1}
                   value={giftAmount}
                   onChange={(e) => setGiftAmount(e.target.value ? Number(e.target.value) : "")}
-                  className="w-full px-3.5 py-2.5 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-purple text-right font-mono font-bold"
+                  className="w-full px-3.5 py-2.5 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-neon-purple text-right font-mono font-bold"
                 />
               </div>
 
@@ -443,7 +443,7 @@ export default function CustomerCrmClient({
                   required
                   value={giftReason}
                   onChange={(e) => setGiftReason(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-purple text-right"
+                  className="w-full px-3.5 py-2.5 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white focus:border-neon-purple text-right"
                 />
               </div>
 
@@ -451,14 +451,14 @@ export default function CustomerCrmClient({
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold text-xs shadow-glow-purple transition disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold text-xs  transition disabled:opacity-50"
                 >
                   {isProcessing ? "جاري الإضافة..." : "منح الهدية الآن 🎁"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setGiftCustomer(null)}
-                  className="px-4 py-2.5 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-[#1a202c] text-gray-300 text-xs font-bold"
                 >
                   إلغاء
                 </button>
@@ -471,7 +471,7 @@ export default function CustomerCrmClient({
       {/* Manual Adjustment Modal */}
       {adjustCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="relative max-w-md w-full bg-[#0c1017] border border-cyan-500/40 rounded-3xl p-6 shadow-glow-cyan text-right space-y-4">
+          <div className="relative max-w-md w-full bg-[#0c1017] border border-orange-500/30 rounded-2xl p-6  text-right space-y-4">
             <h3 className="text-base font-bold text-white">
               تعديل رصيد العميل ({adjustCustomer.name || adjustCustomer.email})
             </h3>
@@ -486,7 +486,7 @@ export default function CustomerCrmClient({
                     className={`py-2 rounded-xl text-xs font-bold transition ${
                       adjustType === "MANUAL_CREDIT"
                         ? "bg-neon-green text-black"
-                        : "bg-garage-900 text-gray-300 border border-gray-700"
+                        : "bg-[#12161f] text-gray-300 border border-gray-700"
                     }`}
                   >
                     إضافة رصيد (+)
@@ -497,7 +497,7 @@ export default function CustomerCrmClient({
                     className={`py-2 rounded-xl text-xs font-bold transition ${
                       adjustType === "MANUAL_DEDUCTION"
                         ? "bg-neon-red text-white"
-                        : "bg-garage-900 text-gray-300 border border-gray-700"
+                        : "bg-[#12161f] text-gray-300 border border-gray-700"
                     }`}
                   >
                     خصم رصيد (-)
@@ -513,7 +513,7 @@ export default function CustomerCrmClient({
                   min={1}
                   value={adjustAmount}
                   onChange={(e) => setAdjustAmount(e.target.value ? Number(e.target.value) : "")}
-                  className="w-full px-3.5 py-2 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white text-right font-mono"
+                  className="w-full px-3.5 py-2 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white text-right font-mono"
                 />
               </div>
 
@@ -527,7 +527,7 @@ export default function CustomerCrmClient({
                   value={adjustReason}
                   onChange={(e) => setAdjustReason(e.target.value)}
                   placeholder="سبب التعديل اليدوي..."
-                  className="w-full p-3 bg-garage-900 border border-gray-700 rounded-xl text-xs text-white text-right"
+                  className="w-full p-3 bg-[#12161f] border border-gray-700 rounded-xl text-xs text-white text-right"
                 />
               </div>
 
@@ -535,14 +535,14 @@ export default function CustomerCrmClient({
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-bold text-xs shadow-glow-cyan transition disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-orange-500 text-black font-bold text-xs  transition disabled:opacity-50"
                 >
                   {isProcessing ? "جاري المعالجة..." : "تنفيذ وتوثيق العملية"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setAdjustCustomer(null)}
-                  className="px-4 py-2.5 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-[#1a202c] text-gray-300 text-xs font-bold"
                 >
                   إلغاء
                 </button>
@@ -555,7 +555,7 @@ export default function CustomerCrmClient({
       {/* Delete Customer Confirmation Modal */}
       {deleteUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
-          <div className="relative max-w-md w-full bg-[#0c1017] border border-red-500/50 rounded-3xl p-6 shadow-2xl text-right space-y-4">
+          <div className="relative max-w-md w-full bg-[#0c1017] border border-red-500/50 rounded-2xl p-6 shadow-2xl text-right space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-red-500/20 text-red-400 flex items-center justify-center mx-auto border border-red-500/40">
               <AlertTriangle className="w-6 h-6 animate-pulse" />
             </div>
@@ -593,7 +593,7 @@ export default function CustomerCrmClient({
               <button
                 type="button"
                 onClick={() => setDeleteUser(null)}
-                className="px-5 py-3 rounded-xl bg-garage-800 hover:bg-garage-750 text-gray-300 text-xs font-bold transition"
+                className="px-5 py-3 rounded-xl bg-[#1a202c] hover:bg-garage-750 text-gray-300 text-xs font-bold transition"
               >
                 إلغاء
               </button>
@@ -605,10 +605,10 @@ export default function CustomerCrmClient({
       {/* Role Management Modal */}
       {roleCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
-          <div className="relative max-w-md w-full bg-[#0c1017] border border-cyan-500/50 rounded-3xl p-6 shadow-glow-cyan text-right space-y-4">
+          <div className="relative max-w-md w-full bg-[#0c1017] border border-cyan-500/50 rounded-2xl p-6  text-right space-y-4">
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Crown className="w-5 h-5 text-neon-cyan" />
+                <Crown className="w-5 h-5 text-orange-500" />
                 <span>تعيين رتبة وصلاحيات الحساب</span>
               </h3>
               <button onClick={() => setRoleCustomer(null)} className="text-gray-400 hover:text-white">
@@ -616,7 +616,7 @@ export default function CustomerCrmClient({
               </button>
             </div>
 
-            <div className="p-3 rounded-xl bg-garage-900 border border-gray-800 space-y-1">
+            <div className="p-3 rounded-xl bg-[#12161f] border border-gray-800 space-y-1">
               <p className="text-xs font-bold text-white">{roleCustomer.name || "جيمر"}</p>
               <p className="text-[11px] text-gray-400 font-mono dir-ltr">{roleCustomer.email}</p>
             </div>
@@ -653,8 +653,8 @@ export default function CustomerCrmClient({
                       key={r.role}
                       className={`flex items-start gap-3 p-3 rounded-2xl border cursor-pointer transition ${
                         selectedRole === r.role
-                          ? "bg-cyan-500/10 border-cyan-500/60 shadow-glow-cyan-sm text-white"
-                          : "bg-garage-900 border-gray-800 text-gray-400 hover:text-white"
+                          ? "bg-orange-500/10 border-cyan-500/60  text-white"
+                          : "bg-[#12161f] border-gray-800 text-gray-400 hover:text-white"
                       }`}
                     >
                       <input
@@ -663,7 +663,7 @@ export default function CustomerCrmClient({
                         value={r.role}
                         checked={selectedRole === r.role}
                         onChange={(e) => setSelectedRole(e.target.value)}
-                        className="mt-1 accent-cyan-400"
+                        className="mt-1 accent-orange-500"
                       />
                       <div>
                         <span className="text-xs font-bold block">{r.label}</span>
@@ -678,7 +678,7 @@ export default function CustomerCrmClient({
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-extrabold text-xs shadow-glow-cyan transition disabled:opacity-50 flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3 rounded-xl bg-orange-500 text-black font-extrabold text-xs  transition disabled:opacity-50 flex items-center justify-center gap-1.5"
                 >
                   {isProcessing ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -692,7 +692,7 @@ export default function CustomerCrmClient({
                 <button
                   type="button"
                   onClick={() => setRoleCustomer(null)}
-                  className="px-5 py-3 rounded-xl bg-garage-800 text-gray-300 text-xs font-bold"
+                  className="px-5 py-3 rounded-xl bg-[#1a202c] text-gray-300 text-xs font-bold"
                 >
                   إلغاء
                 </button>
