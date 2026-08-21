@@ -22,7 +22,7 @@ model User {
   updatedAt              DateTime         @updatedAt
   wallet                 Wallet?
   orders                 Order[]
-  tickets                Ticket[]
+  tickets                SupportTicket[]
   reviews                Review[]
   notifications          Notification[]
   depositRequests        DepositRequest[]
@@ -207,12 +207,14 @@ model Review {
   createdAt  DateTime @default(now())
 }
 
-model Ticket {
+model SupportTicket {
   id           String          @id @default(cuid())
   userId       String
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   ticketNumber String          @unique
   subject      String
+  category     String?         @default("GENERAL")
+  relatedId    String?
   priority     String          @default("NORMAL")
   status       String          @default("OPEN")
   createdAt    DateTime        @default(now())
@@ -221,12 +223,15 @@ model Ticket {
 }
 
 model TicketMessage {
-  id        String   @id @default(cuid())
-  ticketId  String
-  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  sender    String
-  message   String
-  createdAt DateTime @default(now())
+  id         String        @id @default(cuid())
+  ticketId   String
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId   String?
+  senderRole String?       @default("CUSTOMER")
+  senderName String?
+  sender     String?
+  message    String
+  createdAt  DateTime      @default(now())
 }
 
 model Notification {
