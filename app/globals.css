@@ -2,14 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Tajawal:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
 
 :root {
   --font-tajawal: 'Tajawal', sans-serif;
-  --font-chakra: 'Chakra Petch', sans-serif;
-  --neon-cyan: #00f0ff;
-  --neon-purple: #a855f7;
-  --neon-green: #10b981;
+  --theme-orange: #ff6600;
+  --theme-dark: #0a0c10;
+  --theme-card: #12161f;
 }
 
 * {
@@ -17,56 +16,48 @@
 }
 
 body {
-  background-color: #080a0f;
-  color: #f3f4f6;
+  background-color: #0a0c10;
+  color: #ffffff;
   font-family: var(--font-tajawal);
   overflow-x: hidden;
 }
 
-/* Lightweight Scrollbar */
+/* Fast Lightweight Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090c12;
+  background: #0a0c10;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 3px;
+  background: #232a38;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00f0ff;
+  background: #ff6600;
 }
 
-/* Fast Clean Classes - No Heavy Blur & No Complex Shadows */
-.neon-border-cyan {
-  border: 1px solid rgba(0, 240, 255, 0.4);
+/* Fast CSS News Ticker Animation */
+@keyframes ticker {
+  0% {
+    transform: translate3d(100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
 }
 
-.neon-border-purple {
-  border: 1px solid rgba(168, 85, 247, 0.4);
+.news-ticker-content {
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker 25s linear infinite;
+  will-change: transform;
 }
 
-.neon-border-green {
-  border: 1px solid rgba(16, 185, 129, 0.4);
-}
-
-.neon-border-red {
-  border: 1px solid rgba(239, 68, 68, 0.4);
-}
-
-.neon-text-cyan {
-  color: #00f0ff;
-}
-
-.neon-text-purple {
-  color: #c084fc;
-}
-
-.neon-text-green {
-  color: #34d399;
+.news-ticker-content:hover {
+  animation-play-state: paused;
 }
