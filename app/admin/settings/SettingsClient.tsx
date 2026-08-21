@@ -152,37 +152,14 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-gray-300 mb-1">
-                  نص الإعلان الأيمن (رسالة السرعة والتسليم)
+                  نص شريط الأخبار المتحرك (News Ticker)
                 </label>
                 <input
                   type="text"
-                  value={settings.announcement_right || "⚡ تسليم فوري لجميع الخدمات والسيارات خلال 5-15 دقيقة"}
-                  onChange={(e) => handleChange("announcement_right", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
-                  نص الإعلان الأوسط (كود الخصم والعروض)
-                </label>
-                <input
-                  type="text"
-                  value={settings.announcement_center || "كود خصم حصري: CPM2026 خصم 15% على جميع الأقسام!"}
+                  value={settings.announcement_center || "تسليم فوري لجميع الخدمات والسيارات | كود خصم: CPM2026 خصم 15% على جميع الأقسام | رقم الإيداع: 01288212101"}
                   onChange={(e) => handleChange("announcement_center", e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
-                  نص الإعلان الأيسر (رقم الإيداع أو الملاحظة)
-                </label>
-                <input
-                  type="text"
-                  value={settings.announcement_left || "رقم الإيداع المعتمد: 01288212101"}
-                  onChange={(e) => handleChange("announcement_left", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                  placeholder="اكتب الإعلان الكامل الذي يتحرك كسطر أخبار..."
                 />
               </div>
             </div>
@@ -198,7 +175,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                 <span>نصوص وهوية المتجر والشاشة الرئيسية (CMS)</span>
               </h3>
               <p className="text-xs text-gray-400">
-                تعديل اسم المتجر، العنوان الرئيسي، الوصف، والبيانات التعريفية
+                تعديل اسم المتجر، الشعار، رابط اللوجو، والبيانات التعريفية
               </p>
             </div>
 
@@ -226,10 +203,21 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
               </div>
 
               <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">رابط صورة اللوجو (اختياري)</label>
+                <input
+                  type="url"
+                  placeholder="https://... (اتركه فارغاً لاستخدام أيقونة السيارة الافتراضية)"
+                  value={settings.store_logo_url || ""}
+                  onChange={(e) => handleChange("store_logo_url", e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right dir-ltr"
+                />
+              </div>
+
+              <div>
                 <label className="block text-xs font-medium text-gray-300 mb-1">شارة الهيدر المميزة (Hero Badge)</label>
                 <input
                   type="text"
-                  value={settings.hero_badge || "ورشة تعديل سيارات Racing Garage المستقبلية #1"}
+                  value={settings.hero_badge || "متجر كار باركينج الرسمي #1"}
                   onChange={(e) => handleChange("hero_badge", e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
                 />
