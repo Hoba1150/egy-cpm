@@ -21,7 +21,7 @@ import {
 export default function SettingsClient({ initialSettings }: { initialSettings: Record<string, string> }) {
   const router = useRouter();
   const [settings, setSettings] = useState(initialSettings);
-  const [activeTab, setActiveTab] = useState<"ANNOUNCEMENT" | "TEXTS" | "PAYMENT" | "BACKUP">("ANNOUNCEMENT");
+  const [activeTab, setActiveTab] = useState<"ANNOUNCEMENT" | "TEXTS" | "PAYMENT" | "BACKUP" | "PAGE_TEXTS">("ANNOUNCEMENT");
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -68,18 +68,18 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
   return (
     <div className="space-y-6">
       {/* Navigation Tabs */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1.5 bg-garage-900 border border-gray-800 rounded-2xl">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-1.5 bg-[#12161f] border border-gray-800 rounded-2xl">
         <button
           type="button"
           onClick={() => setActiveTab("ANNOUNCEMENT")}
           className={`py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
             activeTab === "ANNOUNCEMENT"
-              ? "bg-gradient-to-r from-neon-cyan to-neon-blue text-black shadow-glow-cyan-sm"
+              ? "bg-orange-500 text-black "
               : "text-gray-400 hover:text-white"
           }`}
         >
           <Megaphone className="w-4 h-4" />
-          <span>بار الإعلان العلوي</span>
+          <span>شريط الأخبار</span>
         </button>
 
         <button
@@ -87,12 +87,12 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
           onClick={() => setActiveTab("TEXTS")}
           className={`py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
             activeTab === "TEXTS"
-              ? "bg-gradient-to-r from-neon-cyan to-neon-blue text-black shadow-glow-cyan-sm"
+              ? "bg-orange-500 text-black "
               : "text-gray-400 hover:text-white"
           }`}
         >
           <Type className="w-4 h-4" />
-          <span>نصوص وهوية المتجر</span>
+          <span>هوية المتجر</span>
         </button>
 
         <button
@@ -100,12 +100,25 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
           onClick={() => setActiveTab("PAYMENT")}
           className={`py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
             activeTab === "PAYMENT"
-              ? "bg-gradient-to-r from-neon-cyan to-neon-blue text-black shadow-glow-cyan-sm"
+              ? "bg-orange-500 text-black "
               : "text-gray-400 hover:text-white"
           }`}
         >
           <CreditCard className="w-4 h-4" />
-          <span>أرقام الدفع والكاش</span>
+          <span>أرقام الدفع</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("PAGE_TEXTS")}
+          className={`py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
+            activeTab === "PAGE_TEXTS"
+              ? "bg-orange-500 text-black "
+              : "text-gray-400 hover:text-white"
+          }`}
+        >
+          <Sliders className="w-4 h-4" />
+          <span>نصوص الصفحات</span>
         </button>
 
         <button
@@ -113,7 +126,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
           onClick={() => setActiveTab("BACKUP")}
           className={`py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
             activeTab === "BACKUP"
-              ? "bg-gradient-to-r from-neon-cyan to-neon-blue text-black shadow-glow-cyan-sm"
+              ? "bg-orange-500 text-black "
               : "text-gray-400 hover:text-white"
           }`}
         >
@@ -126,11 +139,11 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
       <form onSubmit={handleSave} className="space-y-6">
         {/* TAB 1: TOP ANNOUNCEMENT BAR */}
         {activeTab === "ANNOUNCEMENT" && (
-          <div className="p-6 rounded-3xl bg-garage-900 border border-cyan-500/30 space-y-5">
+          <div className="p-6 rounded-2xl bg-[#12161f] border border-orange-500/30 space-y-5">
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <div className="space-y-0.5">
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Megaphone className="w-5 h-5 text-neon-cyan" />
+                  <Megaphone className="w-5 h-5 text-orange-500" />
                   <span>تعديل بار الإعلان العلوي (Top Announcement Bar)</span>
                 </h3>
                 <p className="text-xs text-gray-400">
@@ -138,7 +151,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                 </p>
               </div>
 
-              <label className="flex items-center gap-2 cursor-pointer bg-garage-850 px-3 py-1.5 rounded-xl border border-gray-700">
+              <label className="flex items-center gap-2 cursor-pointer bg-[#1a202c] px-3 py-1.5 rounded-xl border border-gray-700">
                 <input
                   type="checkbox"
                   checked={settings.announcement_visible !== "false"}
@@ -158,7 +171,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="text"
                   value={settings.announcement_center || "تسليم فوري لجميع الخدمات والسيارات | كود خصم: CPM2026 خصم 15% على جميع الأقسام | رقم الإيداع: 01288212101"}
                   onChange={(e) => handleChange("announcement_center", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right"
                   placeholder="اكتب الإعلان الكامل الذي يتحرك كسطر أخبار..."
                 />
               </div>
@@ -168,10 +181,10 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
 
         {/* TAB 2: STORE TEXTS & HERO */}
         {activeTab === "TEXTS" && (
-          <div className="p-6 rounded-3xl bg-garage-900 border border-cyan-500/30 space-y-5">
+          <div className="p-6 rounded-2xl bg-[#12161f] border border-orange-500/30 space-y-5">
             <div className="border-b border-gray-800 pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Type className="w-5 h-5 text-neon-cyan" />
+                <Type className="w-5 h-5 text-orange-500" />
                 <span>نصوص وهوية المتجر والشاشة الرئيسية (CMS)</span>
               </h3>
               <p className="text-xs text-gray-400">
@@ -187,7 +200,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                     type="text"
                     value={settings.store_name || "EGY CPM"}
                     onChange={(e) => handleChange("store_name", e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right font-bold"
+                    className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right font-bold"
                   />
                 </div>
 
@@ -197,7 +210,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                     type="text"
                     value={settings.store_slogan || "Car Parking Marketplace"}
                     onChange={(e) => handleChange("store_slogan", e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right font-mono"
+                    className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right font-mono"
                   />
                 </div>
               </div>
@@ -209,7 +222,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   placeholder="https://... (اتركه فارغاً لاستخدام أيقونة السيارة الافتراضية)"
                   value={settings.store_logo_url || ""}
                   onChange={(e) => handleChange("store_logo_url", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right dir-ltr"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right dir-ltr"
                 />
               </div>
 
@@ -219,7 +232,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="text"
                   value={settings.hero_badge || "متجر كار باركينج الرسمي #1"}
                   onChange={(e) => handleChange("hero_badge", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right"
                 />
               </div>
 
@@ -229,7 +242,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="text"
                   value={settings.hero_title || "خدمات وسيارات وتعديلات احترافية"}
                   onChange={(e) => handleChange("hero_title", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right font-bold"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right font-bold"
                 />
               </div>
 
@@ -239,7 +252,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   rows={3}
                   value={settings.hero_description || "المتجر الأقوى لشراء سيارات دريفت وسرعة معدلة 1695HP، سيارات رسم وتصميمات نادرة، شحن أموال خضراء 50M وكوينز ذهبي وتفعيل الكينج رانك الملكي وحسابات جاهزة بتسليم فوري وضمان ضد الباند 100%."}
                   onChange={(e) => handleChange("hero_description", e.target.value)}
-                  className="w-full p-3 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right leading-relaxed"
+                  className="w-full p-3 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right leading-relaxed"
                 />
               </div>
 
@@ -249,7 +262,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   rows={2}
                   value={settings.footer_bio || "المتجر الأول والمتخصص في خدمات لعبة Car Parking Multiplayer على الهواتف. سيارات مرسومة، تعديل محركات 1695HP، كينج رانك، شحن كاش وكوينز بأمان 100%."}
                   onChange={(e) => handleChange("footer_bio", e.target.value)}
-                  className="w-full p-3 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right leading-relaxed"
+                  className="w-full p-3 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right leading-relaxed"
                 />
               </div>
 
@@ -260,7 +273,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                     type="text"
                     value={settings.footer_guarantee || "ضمان ضد الباند 100% وتسليم فوري"}
                     onChange={(e) => handleChange("footer_guarantee", e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                    className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right"
                   />
                 </div>
 
@@ -270,7 +283,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                     type="text"
                     value={settings.footer_copyright || "© 2026 EGY CPM. جميع الحقوق محفوظة لمتجر كار باركينج."}
                     onChange={(e) => handleChange("footer_copyright", e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+                    className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right"
                   />
                 </div>
               </div>
@@ -280,10 +293,10 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
 
         {/* TAB 3: PAYMENT & CASH NUMBERS */}
         {activeTab === "PAYMENT" && (
-          <div className="p-6 rounded-3xl bg-garage-900 border border-cyan-500/30 space-y-5">
+          <div className="p-6 rounded-2xl bg-[#12161f] border border-orange-500/30 space-y-5">
             <div className="border-b border-gray-800 pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-neon-cyan" />
+                <CreditCard className="w-5 h-5 text-orange-500" />
                 <span>أرقام التحويل وطرق الدفع والاتصال</span>
               </h3>
               <p className="text-xs text-gray-400">
@@ -298,7 +311,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="text"
                   value={settings.vodafone_cash || "01288212101"}
                   onChange={(e) => handleChange("vodafone_cash", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right dir-ltr font-mono"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right dir-ltr font-mono"
                 />
               </div>
 
@@ -308,7 +321,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="text"
                   value={settings.orange_cash || "01288212101"}
                   onChange={(e) => handleChange("orange_cash", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right dir-ltr font-mono"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right dir-ltr font-mono"
                 />
               </div>
 
@@ -318,7 +331,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="text"
                   value={settings.etisalat_cash || "01288212101"}
                   onChange={(e) => handleChange("etisalat_cash", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right dir-ltr font-mono"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right dir-ltr font-mono"
                 />
               </div>
 
@@ -328,7 +341,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="text"
                   value={settings.we_pay || "01288212101"}
                   onChange={(e) => handleChange("we_pay", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right dir-ltr font-mono"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right dir-ltr font-mono"
                 />
               </div>
 
@@ -338,7 +351,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="number"
                   value={settings.min_deposit || "50"}
                   onChange={(e) => handleChange("min_deposit", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right font-mono"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right font-mono"
                 />
               </div>
 
@@ -348,7 +361,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
                   type="number"
                   value={settings.max_deposit || "20000"}
                   onChange={(e) => handleChange("max_deposit", e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right font-mono"
+                  className="w-full px-3.5 py-2.5 bg-[#1a202c] border border-gray-700 rounded-xl text-xs text-white focus:border-orange-500 text-right font-mono"
                 />
               </div>
             </div>
@@ -357,8 +370,8 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
 
         {/* TAB 4: BACKUP */}
         {activeTab === "BACKUP" && (
-          <div className="p-6 rounded-3xl bg-garage-900 border border-purple-500/30 space-y-4">
-            <div className="flex items-center gap-2 text-neon-purple font-bold text-sm">
+          <div className="p-6 rounded-2xl bg-[#12161f] border border-orange-500/20 space-y-4">
+            <div className="flex items-center gap-2 text-orange-400 font-bold text-sm">
               <Database className="w-5 h-5" />
               <span>النسخ الاحتياطي لقاعدة البيانات (Database Backup)</span>
             </div>
@@ -371,7 +384,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
               type="button"
               onClick={handleDownloadBackup}
               disabled={isExporting}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold text-xs shadow-glow-purple flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition disabled:opacity-50"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-neon-purple to-neon-pink text-white font-bold text-xs  flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition disabled:opacity-50"
             >
               {isExporting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -385,12 +398,53 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
           </div>
         )}
 
+        {/* TAB 5: PAGE TEXTS CMS */}
+        {activeTab === "PAGE_TEXTS" && (
+          <div className="p-6 rounded-2xl bg-[#12161f] border border-orange-500/30 space-y-6">
+            <div className="border-b border-gray-800 pb-3">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Sliders className="w-5 h-5 text-orange-500" />
+                <span>تعديل نصوص وعناوين صفحات المتجر</span>
+              </h3>
+              <p className="text-xs text-gray-400 mt-1">يمكنك تغيير العنوان والوصف لكل صفحة من هنا بدون تعديل الكود</p>
+            </div>
+
+            {[
+              { key: "wallet", label: "صفحة المحفظة (/wallet)", defTitle: "المحفظة وسجل المعاملات المالية", defDesc: "تتبع رصيدك وجميع عمليات الشحن والسحب والشراء" },
+              { key: "deposit", label: "صفحة شحن المحفظة (/deposit)", defTitle: "شحن رصيد المحفظة", defDesc: "اشحن محفظتك بسهولة عبر فودافون كاش، أورنج، اتصالات أو وي باي" },
+              { key: "services", label: "صفحة الخدمات والشحن (/services)", defTitle: "خدمات الشحن وزيادة الرتبة", defDesc: "خدمات شحن الكاش وزيادة الرتبة في Car Parking بأسرع تسليم" },
+              { key: "cars", label: "صفحة السيارات (/cars)", defTitle: "كتالوج السيارات المعدلة والمخصصة", defDesc: "تصفح جميع السيارات المعدلة، الرسم، المحدودة الإصدار بأعلى جودة" },
+              { key: "accounts", label: "صفحة الحسابات (/accounts)", defTitle: "حسابات Car Parking المميزة", defDesc: "حسابات جاهزة بالسيارات والكاش وأعلى الرتب بتسليم فوري" },
+              { key: "orders", label: "صفحة تتبع الطلبات (/orders)", defTitle: "طلباتي ومشترياتي", defDesc: "تتبع حالة طلباتك ومشترياتك ونتائج التسليم" },
+              { key: "support", label: "صفحة الدعم الفني (/support)", defTitle: "الدعم الفني والمساعدة", defDesc: "فريق الدعم متاح 24/7 للرد على استفساراتك وحل مشاكلك" },
+            ].map(({ key, label, defTitle, defDesc }) => (
+              <div key={key} className="space-y-2 p-4 rounded-xl bg-[#1a202c] border border-gray-800">
+                <h4 className="text-xs font-extrabold text-orange-500 uppercase tracking-wide">{label}</h4>
+                <input
+                  type="text"
+                  value={settings[`page_${key}_title`] || defTitle}
+                  onChange={(e) => handleChange(`page_${key}_title`, e.target.value)}
+                  placeholder="عنوان الصفحة"
+                  className="w-full px-3 py-2 bg-[#0d1117] border border-gray-700 rounded-lg text-xs text-white text-right focus:border-orange-500"
+                />
+                <input
+                  type="text"
+                  value={settings[`page_${key}_desc`] || defDesc}
+                  onChange={(e) => handleChange(`page_${key}_desc`, e.target.value)}
+                  placeholder="وصف الصفحة"
+                  className="w-full px-3 py-2 bg-[#0d1117] border border-gray-700 rounded-lg text-xs text-white text-right focus:border-orange-500"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Submit Save Button */}
         {activeTab !== "BACKUP" && (
           <button
             type="submit"
             disabled={isSaving}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-black text-sm shadow-glow-cyan hover:scale-[1.01] active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-4 rounded-2xl bg-orange-500 text-black font-black text-sm  hover:scale-[1.01] active:scale-[0.98] transition flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSaving ? (
               <Loader2 className="w-5 h-5 animate-spin" />
