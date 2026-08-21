@@ -16,16 +16,16 @@ export default async function AdminAuditLogsPage() {
   const logsRes = await getAuditLogs(1, 50);
 
   const getActionColor = (action: string) => {
-    if (action.includes("APPROVE") || action.includes("CREDIT")) return "text-neon-green bg-green-500/10 border-green-500/30";
-    if (action.includes("REJECT") || action.includes("DELETE") || action.includes("BAN")) return "text-neon-red bg-red-500/10 border-red-500/30";
-    if (action.includes("REFUND")) return "text-neon-purple bg-purple-500/10 border-purple-500/30";
-    return "text-neon-cyan bg-cyan-500/10 border-cyan-500/30";
+    if (action.includes("APPROVE") || action.includes("CREDIT")) return "text-green-400 bg-green-500/10 border-green-500/30";
+    if (action.includes("REJECT") || action.includes("DELETE") || action.includes("BAN")) return "text-red-400 bg-red-500/10 border-red-500/30";
+    if (action.includes("REFUND")) return "text-orange-400 bg-orange-500/10 border-orange-500/20";
+    return "text-orange-500 bg-orange-500/10 border-orange-500/30";
   };
 
   return (
     <div className="space-y-6 text-right">
       <div className="space-y-1 border-b border-gray-800 pb-4">
-        <span className="text-xs font-mono font-bold text-neon-cyan uppercase">
+        <span className="text-xs font-mono font-bold text-orange-500 uppercase">
           Tamper-Proof Audit Vault
         </span>
         <h1 className="text-2xl sm:text-3xl font-black text-white">
@@ -36,7 +36,7 @@ export default async function AdminAuditLogsPage() {
         </p>
       </div>
 
-      <div className="rounded-3xl bg-garage-900 border border-gray-800 overflow-hidden">
+      <div className="rounded-2xl bg-[#12161f] border border-gray-800 overflow-hidden">
         {logsRes.logs.length === 0 ? (
           <div className="p-12 text-center text-gray-500 text-xs">
             لا توجد سجلات مسجلة حالياً.
@@ -55,7 +55,7 @@ export default async function AdminAuditLogsPage() {
               </thead>
               <tbody className="divide-y divide-gray-800/60 font-mono">
                 {logsRes.logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-garage-850/50 transition">
+                  <tr key={log.id} className="hover:bg-[#1a202c]/50 transition">
                     <td className="p-4">
                       <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${getActionColor(log.action)}`}>
                         {log.action}
