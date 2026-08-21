@@ -2,7 +2,7 @@ import React from "react";
 import { getProducts, getCategories } from "@/lib/actions/product";
 import ProductCard from "@/components/store/ProductCard";
 import Link from "next/link";
-import { Search, Filter, SlidersHorizontal, Car, Zap, Sparkles } from "lucide-react";
+import { Search, Filter, Car } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -32,44 +32,34 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       maxPrice: searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined,
       inStockOnly: searchParams.inStock === "true",
       page: currentPage,
-      limit: 20,
+      limit: 24,
     }),
     getCategories(),
   ]);
 
   const sortOptions = [
-    { label: "الأحدث أولاً", value: "newest" },
-    { label: "الأعلى مبيعاً 🔥", value: "sales" },
-    { label: "الأعلى خصماً 💥", value: "discount" },
-    { label: "السعر: من الأقل للأعلى", value: "price_asc" },
-    { label: "السعر: من الأعلى للأقل", value: "price_desc" },
+    { label: "الأحدث", value: "newest" },
+    { label: "الأعلى مبيعاً", value: "sales" },
+    { label: "الأعلى خصماً", value: "discount" },
+    { label: "السعر: الأقل أولاً", value: "price_asc" },
+    { label: "السعر: الأعلى أولاً", value: "price_desc" },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-right">
-      {/* Header */}
-      <div className="mb-8 space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-black text-white">
-          متجر سيارات وخدمات Car Parking
-        </h1>
-        <p className="text-xs sm:text-sm text-gray-400">
-          تصفح جميع السيارات المعدلة، سيارات الرسم، خدمات الشحن والحسابات ({productsRes.totalCount} عنصر متاح)
-        </p>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-garage-900/90 border border-gray-800 space-y-4 mb-8">
-        <form method="GET" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 text-right space-y-4">
+      {/* Search & Filter Compact Bar */}
+      <div className="p-3 rounded-xl bg-[#12161f] border border-gray-800 space-y-2.5">
+        <form method="GET" className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {/* Search Input */}
           <div className="relative">
             <input
               type="text"
               name="search"
               defaultValue={searchParams.search || ""}
-              placeholder="ابحث بالاسم أو المواصفات..."
-              className="w-full pl-3 pr-9 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white placeholder-gray-500 focus:border-neon-cyan text-right"
+              placeholder="ابحث عن سيارة أو خدمة..."
+              className="w-full pl-3 pr-8 py-2 bg-[#1a202c] border border-gray-700 rounded-lg text-xs text-white placeholder-gray-500 text-right"
             />
-            <Search className="w-4 h-4 absolute right-3 top-3 text-gray-400" />
+            <Search className="w-3.5 h-3.5 absolute right-2.5 top-2.5 text-gray-400" />
           </div>
 
           {/* Category Dropdown */}
@@ -77,9 +67,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             <select
               name="category"
               defaultValue={searchParams.category || "all"}
-              className="w-full px-3 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+              className="w-full px-3 py-2 bg-[#1a202c] border border-gray-700 rounded-lg text-xs text-white text-right"
             >
-              <option value="all">جميع الأقسام والتصنيفات</option>
+              <option value="all">جميع الأقسام</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.slug}>
                   {cat.name}
@@ -89,11 +79,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           </div>
 
           {/* Sort By Dropdown */}
-          <div>
+          <div className="flex items-center gap-2">
             <select
               name="sortBy"
               defaultValue={searchParams.sortBy || "newest"}
-              className="w-full px-3 py-2.5 bg-garage-850 border border-gray-700 rounded-xl text-xs text-white focus:border-neon-cyan text-right"
+              className="w-full px-3 py-2 bg-[#1a202c] border border-gray-700 rounded-lg text-xs text-white text-right"
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -101,26 +91,24 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 </option>
               ))}
             </select>
-          </div>
 
-          {/* Submit Filter Button */}
-          <button
-            type="submit"
-            className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-black font-bold text-xs shadow-glow-cyan-sm hover:shadow-glow-cyan transition flex items-center justify-center gap-2"
-          >
-            <Filter className="w-4 h-4" />
-            <span>تطبيق الفلاتر والبحث</span>
-          </button>
+            <button
+              type="submit"
+              className="py-2 px-4 rounded-lg bg-orange-500 hover:bg-orange-600 text-black font-bold text-xs shrink-0"
+            >
+              بحث
+            </button>
+          </div>
         </form>
 
-        {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-2 border-t border-gray-800/80">
+        {/* Category Horizontal Quick Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1.5 border-t border-gray-800/80">
           <Link
             href="/shop"
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+            className={`px-2.5 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition ${
               !searchParams.category || searchParams.category === "all"
-                ? "bg-neon-cyan text-black font-bold shadow-glow-cyan-sm"
-                : "bg-garage-850 text-gray-300 hover:text-white border border-gray-800"
+                ? "bg-orange-500 text-black"
+                : "bg-[#1a202c] text-gray-300 hover:text-white"
             }`}
           >
             الكل
@@ -131,10 +119,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               <Link
                 key={cat.id}
                 href={`/shop?category=${cat.slug}`}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold whitespace-nowrap transition ${
                   isSelected
-                    ? "bg-neon-cyan text-black font-bold shadow-glow-cyan-sm"
-                    : "bg-garage-850 text-gray-300 hover:text-white border border-gray-800"
+                    ? "bg-orange-500 text-black"
+                    : "bg-[#1a202c] text-gray-300 hover:text-white"
                 }`}
               >
                 {cat.name.split("(")[0]}
@@ -144,27 +132,22 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         </div>
       </div>
 
-      {/* Products Grid */}
+      {/* Products Grid: 2 columns on Mobile (Amazon/Noon style), 3 on Tablet, 4-5 on Desktop */}
       {productsRes.items.length === 0 ? (
-        <div className="py-20 text-center rounded-3xl bg-garage-900/60 border border-gray-800 space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-garage-850 mx-auto flex items-center justify-center text-gray-600">
-            <Car className="w-8 h-8" />
+        <div className="py-16 text-center rounded-2xl bg-[#12161f] border border-gray-800 space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-gray-800 mx-auto flex items-center justify-center text-gray-400">
+            <Car className="w-6 h-6" />
           </div>
-          <div className="space-y-1">
-            <h3 className="text-lg font-bold text-white">لم يتم العثور على أي منتجات مطابقة</h3>
-            <p className="text-xs text-gray-400">
-              جرب تغيير كلمات البحث أو اختيار قسم مختلف.
-            </p>
-          </div>
+          <p className="text-sm font-bold text-white">لا توجد منتجات مطابقة للبحث</p>
           <Link
             href="/shop"
-            className="inline-block px-5 py-2 rounded-xl bg-garage-800 text-neon-cyan text-xs font-bold border border-cyan-500/30"
+            className="inline-block px-4 py-1.5 rounded-lg bg-orange-500 text-black text-xs font-bold"
           >
-            إعادة تعيين الفلاتر
+            عرض جميع المنتجات
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
           {productsRes.items.map((prod) => (
             <ProductCard key={prod.id} product={prod as any} />
           ))}
@@ -173,15 +156,15 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
       {/* Pagination */}
       {productsRes.totalPages > 1 && (
-        <div className="mt-12 flex justify-center items-center gap-2">
+        <div className="mt-8 flex justify-center items-center gap-1.5">
           {Array.from({ length: productsRes.totalPages }, (_, i) => i + 1).map((pageNum) => (
             <Link
               key={pageNum}
               href={`/shop?page=${pageNum}${searchParams.category ? `&category=${searchParams.category}` : ""}${searchParams.sortBy ? `&sortBy=${searchParams.sortBy}` : ""}`}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs transition ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs transition ${
                 currentPage === pageNum
-                  ? "bg-neon-cyan text-black shadow-glow-cyan"
-                  : "bg-garage-900 border border-gray-800 text-gray-300 hover:text-white"
+                  ? "bg-orange-500 text-black font-extrabold"
+                  : "bg-[#12161f] border border-gray-800 text-gray-300 hover:text-white"
               }`}
             >
               {pageNum}
