@@ -23,10 +23,8 @@ export default function MobileBottomNav() {
 
   useEffect(() => {
     fetchUser();
-
     window.addEventListener("cpm_auth_changed", fetchUser);
     window.addEventListener("focus", fetchUser);
-
     return () => {
       window.removeEventListener("cpm_auth_changed", fetchUser);
       window.removeEventListener("focus", fetchUser);
@@ -53,8 +51,7 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      {/* Premium Fixed Mobile Bottom Bar - Fixed at bottom of screen */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#090c12]/95 backdrop-blur-xl border-t border-cyan-500/30 px-1.5 py-1.5 shadow-[0_-5px_25px_rgba(0,0,0,0.9)]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0d1117] border-t border-gray-800 px-1 py-1 shadow-2xl">
         <div className="grid grid-cols-5 gap-1">
           {items.map((item, idx) => {
             const Icon = item.icon;
@@ -65,17 +62,17 @@ export default function MobileBottomNav() {
                 <button
                   key={idx}
                   onClick={item.onClick}
-                  className="flex flex-col items-center justify-center py-1 relative text-gray-400 hover:text-neon-cyan transition active:scale-95"
+                  className="flex flex-col items-center justify-center py-1 relative text-gray-400 hover:text-orange-500 transition"
                 >
                   <div className="relative">
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-4 h-4" />
                     {Boolean(item.badge && item.badge > 0) && (
-                      <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-neon-cyan to-neon-blue text-[9px] font-extrabold text-black shadow-glow-cyan-sm">
+                      <span className="absolute -top-1.5 -right-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-orange-500 text-[8px] font-bold text-black">
                         {item.badge}
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] mt-1 font-bold">{item.name}</span>
+                  <span className="text-[9px] mt-0.5 font-medium">{item.name}</span>
                 </button>
               );
             }
@@ -84,18 +81,18 @@ export default function MobileBottomNav() {
               <Link
                 key={idx}
                 href={item.href!}
-                className={`flex flex-col items-center justify-center py-1 relative transition active:scale-95 ${
+                className={`flex flex-col items-center justify-center py-1 relative transition ${
                   isActive
-                    ? "text-neon-cyan font-bold"
+                    ? "text-orange-500 font-bold"
                     : "text-gray-400 hover:text-gray-200"
                 }`}
               >
                 <div className="relative">
-                  <Icon className={`w-5 h-5 ${isActive ? "text-neon-cyan scale-110 drop-shadow-[0_0_8px_rgba(0,240,255,0.7)]" : ""}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? "text-orange-500" : ""}`} />
                 </div>
-                <span className="text-[10px] mt-1 font-bold">{item.name}</span>
+                <span className="text-[9px] mt-0.5 font-medium">{item.name}</span>
                 {isActive && (
-                  <span className="absolute -bottom-1 w-6 h-0.5 bg-neon-cyan rounded-full shadow-glow-cyan" />
+                  <span className="absolute -bottom-0.5 w-4 h-0.5 bg-orange-500 rounded-full" />
                 )}
               </Link>
             );
