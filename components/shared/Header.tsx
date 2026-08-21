@@ -19,6 +19,7 @@ import {
   Headphones,
   CheckSquare,
   Sparkles,
+  Gift,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import NotificationsDropdown from "@/components/shared/NotificationsDropdown";
@@ -90,6 +91,7 @@ export default function Header() {
 
   const navLinks = [
     { name: "الرئيسية", href: "/", icon: Sparkles },
+    { name: "السحوبات والجوائز", href: "/giveaways", icon: Gift },
     { name: "السيارات", href: "/cars", icon: Car },
     { name: "خدمات الشحن", href: "/services", icon: Zap },
     { name: "الحسابات", href: "/accounts", icon: User },
