@@ -30,28 +30,31 @@ model User {
 }
 
 model Wallet {
-  id             String        @id @default(cuid())
-  userId         String        @unique
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  balance        Float         @default(0.0)
-  giftBalance    Float         @default(0.0)
-  totalDeposited Float         @default(0.0)
-  totalSpent     Float         @default(0.0)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  transactions   Transaction[]
+  id             String               @id @default(cuid())
+  userId         String               @unique
+  user           User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance        Float                @default(0.0)
+  giftBalance    Float                @default(0.0)
+  totalDeposited Float                @default(0.0)
+  totalSpent     Float                @default(0.0)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  transactions   WalletTransaction[]
 }
 
-model Transaction {
-  id           String   @id @default(cuid())
-  walletId     String
-  wallet       Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  type         String
-  amount       Float
-  balanceAfter Float
-  description  String
-  referenceId  String?
-  createdAt    DateTime @default(now())
+model WalletTransaction {
+  id                String   @id @default(cuid())
+  walletId          String
+  wallet            Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type              String
+  amount            Float
+  beforeBalance     Float    @default(0.0)
+  afterBalance      Float    @default(0.0)
+  beforeGiftBalance Float    @default(0.0)
+  afterGiftBalance  Float    @default(0.0)
+  description       String
+  referenceId       String?
+  createdAt         DateTime @default(now())
 }
 
 model DepositRequest {
@@ -66,6 +69,7 @@ model DepositRequest {
   screenshotUrl String
   status        String    @default("PENDING")
   adminNotes    String?
+  reviewedById  String?
   reviewedAt    DateTime?
   reviewedBy    String?
   createdAt     DateTime  @default(now())
@@ -87,65 +91,76 @@ model Category {
 }
 
 model Product {
-  id                       String      @id @default(cuid())
-  categoryId               String
-  category                 Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  name                     String
-  slug                     String      @unique
-  description              String
-  price                    Float
-  originalPrice            Float?
-  discountPercent          Float?
-  images                   String
-  productType              String
-  stockType                String      @default("UNLIMITED")
-  stockQuantity            Int         @default(999)
-  isFeatured               Boolean     @default(false)
-  isBestSeller             Boolean     @default(false)
-  isLimited                Boolean     @default(false)
-  isActive                 Boolean     @default(true)
-  totalSales               Int         @default(0)
-  deliveryTimeMinutes      Int         @default(10)
-  serviceRequirements      String?
-  detailedSpecs            String?
-  accountDetailsEncrypted  String?
-  createdAt                DateTime    @default(now())
-  updatedAt                DateTime    @updatedAt
-  orderItems               OrderItem[]
-  reviews                  Review[]
+  id                      String      @id @default(cuid())
+  categoryId              String
+  category                Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name                    String
+  slug                    String      @unique
+  description             String
+  price                   Float
+  originalPrice           Float?
+  discountPercent         Float?
+  images                  String
+  productType             String
+  stockType               String      @default("UNLIMITED")
+  stockQuantity           Int         @default(999)
+  isFeatured              Boolean     @default(false)
+  isBestSeller            Boolean     @default(false)
+  isLimited               Boolean     @default(false)
+  isActive                Boolean     @default(true)
+  totalSales              Int         @default(0)
+  deliveryTimeMinutes     Int         @default(10)
+  serviceRequirements     String?
+  detailedSpecs           String?
+  accountDetailsEncrypted String?
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  orderItems              OrderItem[]
+  reviews                 Review[]
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  userId        String
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orderNumber   String      @unique
-  status        String      @default("PAID")
-  total         Float
-  subtotal      Float
-  discount      Float       @default(0.0)
-  couponCode    String?
-  items         OrderItem[]
-  gameId        String?
-  gameUsername  String?
-  whatsappPhone String?
-  notes         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id                   String      @id @default(cuid())
+  userId               String
+  user                 User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderNumber          String      @unique
+  status               String      @default("PAID")
+  total                Float
+  subtotal             Float
+  discount             Float       @default(0.0)
+  couponCode           String?
+  paymentMethod        String?     @default("WALLET")
+  gameUsername         String?
+  gameId               String?
+  gamePasswordEncrypted String?
+  gamePlayerId         String?
+  customerNotes        String?
+  adminNotes           String?
+  timeline             String?
+  refundedAmount       Float?
+  whatsappPhone        String?
+  notes                String?
+  items                OrderItem[]
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
 }
 
 model OrderItem {
-  id                  String   @id @default(cuid())
-  orderId             String
-  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId           String
-  product             Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  name                String
-  price               Float
-  quantity            Int      @default(1)
-  productType         String
-  serviceRequirements String?
-  createdAt           DateTime @default(now())
+  id                       String   @id @default(cuid())
+  orderId                  String
+  order                    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId                String
+  product                  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name                     String
+  price                    Float
+  quantity                 Int      @default(1)
+  productType              String
+  productName              String?
+  productPrice             Float?
+  total                    Float?
+  serviceRequirements      String?
+  deliveredDataEncrypted   String?
+  createdAt                DateTime @default(now())
 }
 
 model Coupon {
@@ -154,22 +169,29 @@ model Coupon {
   discountType   String
   discountValue  Float
   minOrderAmount Float         @default(0.0)
+  minOrderValue  Float?
   maxDiscount    Float?
   usageLimit     Int?
   usageCount     Int           @default(0)
+  maxUses        Int?
+  usedCount      Int           @default(0)
+  startDate      DateTime?
   isActive       Boolean       @default(true)
   expiresAt      DateTime?
+  categoryId     String?
+  productId      String?
   createdAt      DateTime      @default(now())
   usages         CouponUsage[]
 }
 
 model CouponUsage {
-  id        String   @id @default(cuid())
-  couponId  String
-  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
-  userId    String
-  orderId   String
-  createdAt DateTime @default(now())
+  id             String   @id @default(cuid())
+  couponId       String
+  coupon         Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  userId         String
+  orderId        String
+  discountAmount Float?
+  createdAt      DateTime @default(now())
 }
 
 model Review {
@@ -179,7 +201,7 @@ model Review {
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   rating     Int
-  comment    String
+  comment    String?
   isApproved Boolean  @default(true)
   isHidden   Boolean  @default(false)
   createdAt  DateTime @default(now())
@@ -215,6 +237,7 @@ model Notification {
   message   String
   type      String   @default("SYSTEM")
   isRead    Boolean  @default(false)
+  link      String?
   createdAt DateTime @default(now())
 }
 
